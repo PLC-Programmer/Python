@@ -14,9 +14,6 @@ filenames of photos with prices at gas stations
 #
 #
 # to do:
-#  - data grooming: there can be more than one price per day
-#    => take only the last price
-#       => solution:  pandas?
 #
 #
 # PEP8 check (http://pep8online.com): OK
@@ -26,12 +23,14 @@ import datetime
 import re  # regular expressions
 
 import matplotlib.pyplot as plt
-import matplotlib.ticker as mtick
+# import matplotlib.ticker as mtick
+
+import pandas as pd
 
 
 workdir = "C:\\temp\\Super"
-TITLE = "Super gas prices [EUR] in Munich area\
-\narbitrary spot checks"
+TITLE = "Super gas prices [EUR per liter] in Munich area (Germany)\
+\narbitrary spot checks (no duplicate days)"
 
 os.chdir(workdir)
 
@@ -75,11 +74,25 @@ else:
 
 ##################################
 #
+# pandas data clean-up:
+#  - data grooming: there can be more than one price per day
+#    => take only the last price
+#
+# create a DataFrame:
+df1 = pd.DataFrame({"price": photo_prices}, index=photo_dates)
+
+# eliminate duplicates:
+df1a = df1[~df1.index.duplicated(keep='last')]
+
+
+##################################
+#
 # plotting:
 fig = plt.figure(figsize=(16, 9))
 
 ax = plt.subplot(111)
-ax.plot(photo_dates, photo_prices)
+# ax.plot(photo_dates, photo_prices)
+ax.plot(df1a.index, df1a.price)
 
 # have a plot title:
 plt.title(TITLE, fontsize=20)
