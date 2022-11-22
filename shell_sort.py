@@ -1,5 +1,6 @@
 # shell_sort.py
-# RSa, 2016-03-20
+#
+# 2016-03-20
 #
 # idea after: https://en.wikipedia.org/wiki/Shellsort
 # number of comparisons: << n*n
