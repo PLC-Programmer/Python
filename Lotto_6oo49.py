@@ -1,5 +1,6 @@
 # Lotto_6oo49.py
-# RSa, 2015-10-21
+# 
+# 2015-10-21
 #
 # test on: Win8.1 (64 Bit), CLI Python 3.5.0: OK
 # PEP8 check (http://pep8online.com): OK
