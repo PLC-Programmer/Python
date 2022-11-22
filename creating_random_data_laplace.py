@@ -4,7 +4,7 @@ This module creates a tensor with random data
 following a Laplace distribution
 """
 #
-# faultcode, 2022-11-22
+# 2022-11-22
 #
 # sources:
 #   https://pytorch.org/docs/stable/distributions.html
