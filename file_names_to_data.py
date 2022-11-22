@@ -4,7 +4,7 @@ This module plots gas prices which have been retrieved from
 filenames of photos with prices at gas stations
 """
 #
-# RSa, 2021-05-30
+# 2021-05-30
 #
 # Python 3.7.9 (tags/v3.7.9:13c94747c7, Aug 17 2020, 18:58:18)
 # [MSC v.1900 64 bit (AMD64)]
