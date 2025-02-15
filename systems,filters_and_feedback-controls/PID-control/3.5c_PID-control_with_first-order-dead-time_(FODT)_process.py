@@ -41,7 +41,7 @@ Tn = a0/1.2  # time constant of I-term
 Tv = 0.005   # time constant of D-term: org 0.005
 #
 # idea how to implement an ideal PID controller:
-#	u(t) = Kp*(e(t) + 1/Tn*∫e(t)*dt + Tv*e(t)') <-- controller output
+#   u(t) = Kp*(e(t) + 1/Tn*∫e(t)*dt + Tv*e(t)') <-- controller output
 #   e(t) = w1 - x1 <-- control error
 #   => e' = w1' - x1' =  w1' - x2
 #   x5 := ∫(w1 - x1)*dt
