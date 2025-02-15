@@ -154,5 +154,4 @@ from: http://web.mit.edu/2.14/www/Handouts/StateSpace.pdf
 
 (2.14 Analysis and Design of Feedback Control Systems, State-Space Representation of LTI Systems, Derek Rowell, October 2002)
 
-\
-##_end
+
