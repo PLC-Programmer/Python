@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-2025-02-14/15
+2025-02-14/15/17
 
 3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py
+
+
+rev.2025-02-17: apply noise to x1(t) only at the end of the Runge–Kutta loop!
 
 
 Based on program:
@@ -66,7 +69,8 @@ x5no = np.zeros([STEPS])  # same without dead time
 
 w_1 = 1.0  # jump of reference value at t = 0
 
-SIGMA = 0.2  # sigma of noisy measurment
+SIGMA = 0.0035  # sigma of noisy measurement
+x1_noise = 1.0 + np.random.normal(0.0, SIGMA, STEPS)
 
 
 def DIFF_EQU(x_1, x_2, x_5):
@@ -74,9 +78,6 @@ def DIFF_EQU(x_1, x_2, x_5):
     calculate f1,f2: first order ODE's
     same for both calculations: with or without process dead time
     '''
-    # noisy measurment:
-    x_1 = x_1 * (1.0 + np.random.normal(0.0, SIGMA, 1))[0]
-
     # for testing process dead time: fixed controller output
     # u = 1.0
 
@@ -131,7 +132,7 @@ for k in range(1,STEPS):
     x1_ = x1[k-1] + (k1 + 2.0*k2 + 2.0*k3 + k4) / 6.0
     x5_ = x5[k-1] + (o1 + 2.0*o2 + 2.0*o3 + o4) / 6.0
 
-    x1[k] = x1_
+    x1[k] = x1_ * x1_noise[k-1]
     x2[k] = x2_
     x5[k] = x5_
 
@@ -168,7 +169,7 @@ for k in range(1,STEPS):
     x1_ = x1no[k-1] + (k1 + 2.0*k2 + 2.0*k3 + k4) / 6.0
     x5_ = x5no[k-1] + (o1 + 2.0*o2 + 2.0*o3 + o4) / 6.0
 
-    x1no[k] = x1_
+    x1no[k] = x1_ * x1_noise[k-1]
     x2no[k] = x2_
     x5no[k] = x5_
 
@@ -178,9 +179,6 @@ def DIFF_EQU2(x_1):
     '''
     calculate f1: first order ODE
     '''
-    # noisy measurment:
-    x_1 = x_1 * (1.0 + np.random.normal(0.0, SIGMA, 1))[0]
-
     # for testing process dead time: fixed controller output
     u = 1.0
 
@@ -212,7 +210,7 @@ for k in range(1,STEPS):
     k4 = h * f1_
     x1_ = x1nc[k-1] + (k1 + 2.0*k2 + 2.0*k3 + k4) / 6.0
 
-    x1nc[k] = x1_
+    x1nc[k] = x1_ * x1_noise[k-1]
 
 
 
