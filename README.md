@@ -1,5 +1,30 @@
 ------
 
+2025-02-17
+
+Revised version of *3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py*: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py
+
+This was needed to improve the handling of noise on the measurement, that is state variable x1. Before, noise was added in every call of function *DIFF_EQU*, something which is not very logical.
+
+Now, a noise signal is generated once and before a system simulation loop and applied commonly to all system simulation loops to compare apples to apples:
+
+*SIGMA = 0.0035  # sigma of noisy measurement*
+
+*x1_noise = 1.0 + np.random.normal(0.0, SIGMA, STEPS)*
+
+It's only added to x1 at the end of a system simulation loop, for example:
+
+...
+
+*x1[k] = x1_ * x1_noise[k-1]*
+
+*x2[k] = x2_*
+    
+*x5[k] = x5_*
+
+
+------
+
 2025-02-15
 
 Added *3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py* file https://github.com/PLC-Programmer/Python/blob/master/systems,filters_and_feedback-controls/PID-control/3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py which implements an algorithm for a PID controller, a PID controller which actually includes a **derivative term** (D-term).
