@@ -1,6 +1,35 @@
 ------
 
-2025-02-18
+2025-02-18b
+
+There's a Catch-22 in the ideal PID algorithm so far since in function *DIFF_EQU* the calculation of a new controller output value:
+```
+u  = Kp*(w_1 - x_1 + 1/Tn*x_5 + Tv*(w1_deriv - x_2))
+```
+..depends on state variable x2. And x2 has been defined to be nothing else than derivative x1' (= f1), which is only updated in a later command:
+```
+f1  = b0 * u - a0 * x_1  # PT1 process
+```
+ 
+However and in this use case, all the action comes from *w1_deriv = 1.0/h* and the **x2** numpy array is still filled with zeros at the end of the program!
+
+Basically, for the use case of a set point (reference) jump, above command could be shortened to just:
+```
+u  = Kp*(w_1 - x_1 + 1/Tn*x_5 + Tv*(w1_deriv))
+```
+
+However, this is not sufficient for a proper D-term in a use case where measurement x1 is being moved by a process disturbance. Also in this case the controller's D-term should kick in.
+
+So, I've updated the calculation of x2 with: 
+```
+f2 = f1                 # x2 := x1' = f1
+```
+in function *DIFF_EQU* and the system simulation loop accordingly.
+
+
+------
+
+2025-02-18a
 
 Improved version of *3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py* because there's a slight unrealistic aspect of this (ideal) PID algorithm so far: the controller output is without any bounds which is not realistic in nature!
 
