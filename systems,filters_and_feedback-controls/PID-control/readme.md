@@ -1,5 +1,74 @@
 ------
 
+2025-02-18
+
+Improved version of *3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py* because there's a slight unrealistic aspect of this (ideal) PID algorithm so far: the controller output is without any bounds which is not realistic in nature!
+
+(a)
+
+This simple process model (1st order lag, "PT1") doesn't explicitly model a real, physical actuator, but in reality there's most probably one.
+
+So, an actuator - which its physical limits - is implicitly modeled within the PID algorithm and/or process model.
+
+Here's the curve of the unbounded controller output u(t) with the dashed line in orange color:
+
+![plot](./pictures/3.5c_PID-control_with_first-order-dead-time_(FODT)_process%20-%20unbounded%20u.png)
+
+\
+Therefore the controller output is bounded now (arbitrarily to 2.0 for demonstration purposes):
+
+![plot](./pictures/3.5c_PID-control_with_first-order-dead-time_(FODT)_process%20-%20bounded%20u.png)
+
+```
+BOUND = True  # True = bounded controller output (for dead time process)
+U_MAX = 2.0   # absolute
+```
+
+...
+
+```
+    if BOUND is True:
+        if abs(u) > U_MAX:
+            u = np.sign(u) * U_MAX
+```
+                       
+\
+(b)
+
+However, the unbounded PID algorithm makes another problem visible: **integrator saturation**!
+
+While the controller output is still moving, the actuator might have already hit a limit for some time or even a long time!
+
+=> long story short: the closed control loop may become unstable or even more unstable and under most, if not even all circumstances the control quality will suffer!
+
+
+The dotted curve shows state variable x5, that is the output of the PID's integrator:
+
+![plot](./pictures/3.5c_PID-control_with_first-order-dead-time_(FODT)_process%20-%20bounded%20u%2C%20I%20part.png)
+
+
+
+
+\
+Luckily **Anti-windup** is taking care of this unwanted phenomenon: as soon as the controller (or actuator respectively) hits a limit any further integration at the I-term of the PID controller is stopped:
+
+```
+    if ANTIWINDUPACTION is True:
+        if ANTIWINDUP is False:
+            f5 = w_1 - x_1  # control error which goes into the integrator of controller
+        else:
+            f5 = 0.0  # no more control error in this case
+    else:
+        f5 = w_1 - x_1
+```
+
+Positive effect: the value of the integrator output stays well below the maximum value in the case without anti-windup and controller output u(t) can leave its upper bound much sooner and the target process value of 1.0 is reached with less overshooting:
+
+![plot](./pictures/3.5c_PID-control_with_first-order-dead-time_(FODT)_process%20-%20bounded%20u%2C%20anti-windup.png)
+ 
+
+------
+
 2025-02-17
 
 Revised version of *3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py*: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py
@@ -8,21 +77,22 @@ This was needed to improve the handling of noise on the measurement, that is sta
 
 Now, a noise signal is generated once and before a system simulation loop and applied commonly to all system simulation loops to compare apples to apples:
 
-*SIGMA = 0.0035  # sigma of noisy measurement*
-
-*x1_noise = 1.0 + np.random.normal(0.0, SIGMA, STEPS)*
+```
+SIGMA = 0.0035  # sigma of noisy measurement
+x1_noise = 1.0 + np.random.normal(0.0, SIGMA, STEPS)
+```
 
 It's only added to x1 at the end of a system simulation loop, for example:
 
 ...
 
-*x1[k] = x1_ * x1_noise[k-1]*
+```
+    x1[k] = x1_ * x1_noise[k-1]
+    x2[k] = x2_
+    x5[k] = x5_
+```
 
-*x2[k] = x2_*
-    
-*x5[k] = x5_*
-
-
+ 
 ------
 
 2025-02-15
