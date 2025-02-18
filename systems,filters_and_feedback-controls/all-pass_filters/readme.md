@@ -1,6 +1,6 @@
 2025-02-11:
 
-![plot](./systems%2Cfilters_and_feedback-controls/all-pass_filters/pictures/6.4c_SECOND-ORDER%20ALLPASS_step_response.png)
+![plot](./pictures/6_4c_SECOND_ORDER_ALLPASS_step_response.png)
 
 \
 Added *6.4c_SECOND-ORDER ALLPASS_step_response.py* file https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/all-pass_filters/6.4c_SECOND-ORDER%20ALLPASS_step_response.py which shows how to successfully transform a transfer function G(s) with derivatives in its numerator polynomial into a state-space representation, for example for a second order all-pass filter:
