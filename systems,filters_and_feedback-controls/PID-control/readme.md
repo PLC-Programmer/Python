@@ -49,7 +49,7 @@ Both algorithms can be easily implemented with a D-term only of the measurement,
 
 And the calculated step responses of both algorithms show another problem which may be notoriously underrated until this day: 
 
-- you cannot simply take one set of (tuned) PID controller parameters (Kp, Ti, Td, Td_lpf) from one implementation and naively expect them to also work in a different setup!
+- you cannot simply take one set of (tuned) PID controller parameters (Kp, Ti, Td, Td_lpf) from one implementation and naively expect them to also work in a different setup but with the same label "PID"!
 
 
 
