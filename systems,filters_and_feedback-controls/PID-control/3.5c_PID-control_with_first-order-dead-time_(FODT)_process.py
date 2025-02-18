@@ -5,7 +5,8 @@
 3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py
 
 
-rev.2025-02-18: option for bounded controller output; anti-windup option
+rev.2025-02-18b: taking proper care of state variable x2
+rev.2025-02-18a: option for bounded controller output; anti-windup option
 rev.2025-02-17: apply noise to x1(t) only at the end of the Runge–Kutta loop!
 
 
@@ -101,6 +102,8 @@ def DIFF_EQU(x_1, x_2, x_5):
 
     f1  = b0 * u - a0 * x_1  # PT1 process
 
+    f2 = f1  # x2 := x1' = f1
+
     if ANTIWINDUPACTION is True:
         if ANTIWINDUP is False:
             f5 = w_1 - x_1  # control error which goes into the integrator of controller
@@ -109,7 +112,7 @@ def DIFF_EQU(x_1, x_2, x_5):
     else:
         f5 = w_1 - x_1
 
-    return f1, f5, u
+    return f1, f2, f5, u
 
 
 # for monitoring:
@@ -131,29 +134,37 @@ for k in range(1,STEPS):
     x1_ = x1[k-1]
     x2_ = x2[k-1]
     x5_ = x5[k-1]
-    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f2_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k1 = h * f1_
+    l1 = h * f2_
     o1 = h * f5_
     x1_ = x1[k-1] + k1 / 2.0
+    x2_ = x2[k-1] + l1 / 2.0
     x5_ = x5[k-1] + o1 / 2.0
-    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f2_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k2 = h * f1_
+    l2 = h * f2_
     o2 = h * f5_
     x1_ = x1[k-1] + k2 / 2.0
+    x2_ = x2[k-1] + l2 / 2.0
     x5_ = x5[k-1] + o2 / 2.0
-    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f2_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k3 = h * f1_
+    l3 = h * f2_
     o3 = h * f5_
     x1_ = x1[k-1] + k3 / 2.0
+    x2_ = x2[k-1] + l3 / 2.0
     x5_ = x5[k-1] + o3 / 2.0
-    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f2_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k4 = h * f1_
+    l4 = h * f2_
     o4 = h * f5_
     x1_ = x1[k-1] + (k1 + 2.0*k2 + 2.0*k3 + k4) / 6.0
+    x2_ = x2[k-1] + (l1 + 2.0*l2 + 2.0*l3 + l4) / 6.0
     x5_ = x5[k-1] + (o1 + 2.0*o2 + 2.0*o3 + o4) / 6.0
 
     x1[k] = x1_ * x1_noise[k-1]
@@ -170,29 +181,37 @@ for k in range(1,STEPS):
     x1_ = x1no[k-1]
     x2_ = x2no[k-1]
     x5_ = x5no[k-1]
-    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f2_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k1 = h * f1_
+    l1 = h * f2_
     o1 = h * f5_
     x1_ = x1no[k-1] + k1 / 2.0
+    x1_ = x1no[k-1] + k1 / 2.0
     x5_ = x5no[k-1] + o1 / 2.0
-    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f2_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k2 = h * f1_
+    l2 = h * f2_
     o2 = h * f5_
     x1_ = x1no[k-1] + k2 / 2.0
+    x1_ = x1no[k-1] + k1 / 2.0
     x5_ = x5no[k-1] + o2 / 2.0
-    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f2_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k3 = h * f1_
+    l3 = h * f2_
     o3 = h * f5_
     x1_ = x1no[k-1] + k3 / 2.0
+    x1_ = x1no[k-1] + k1 / 2.0
     x5_ = x5no[k-1] + o3 / 2.0
-    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f2_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k4 = h * f1_
+    l4 = h * f2_
     o4 = h * f5_
     x1_ = x1no[k-1] + (k1 + 2.0*k2 + 2.0*k3 + k4) / 6.0
+    x2_ = x2no[k-1] + (l1 + 2.0*l2 + 2.0*l3 + l4) / 6.0
     x5_ = x5no[k-1] + (o1 + 2.0*o2 + 2.0*o3 + o4) / 6.0
 
     x1no[k] = x1_ * x1_noise[k-1]
