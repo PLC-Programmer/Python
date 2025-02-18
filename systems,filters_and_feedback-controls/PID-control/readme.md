@@ -15,7 +15,7 @@ I successfully implemented a PI controller as a state-space controller, but fail
 
 Source (0) clearly shows the way to success for a PID controller as a state-space controller: the derivative of the plant output, that is the derivative of measurement y(t), has to be estimated by a suitable observer, that is an **extended state observer** with proper observer gain. This is true for the ideal PID controller as well as the real PID controller.
 
-The "trick" here is that in such a way **no plant model** is being used! Because if a plant model is used to (implicitly) estimate state vector **x(t)** of a PID controller, the controller is no longer independent of the plant model. And the later may be wrong sooner or later!
+The "trick" here is that in such a way **no plant model** is being used. Because if a plant model is used to (implicitly) estimate state vector **x(t)** of a PID controller, the controller is no longer independent of the plant model. And the later may be wrong sooner or later!
 
 \
 The problem for a practical implementation of a (digital) PID controller comes from here: transfer function of the (ideal) D-term = **Kd·s**
