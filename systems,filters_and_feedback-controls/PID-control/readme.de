@@ -74,7 +74,8 @@ I added slight noise to the measurement signal x1 to visually show the effect of
 
 It's really visible if you compare it with the uncontrolled but smoother process response in gray color:
 
-![plot](./systems%2Cfilters_and_feedback-controls/PID-control/pictures/3.5c_PID-control_with_first-order-dead-time_(FODT)_process%20--%20PID%2BPT1%20with%20noise%2C%20dead%20time%2C%20FODT%20response.png)
+![plot](./pictures/3.5c_PID-control_with_first-order-dead-time_(FODT)_process%20--%20PID%2BPT1%20with%20noise%2C%20dead%20time%2C%20FODT%20response.png)
+
 
 However, to not make things too complicated in one batch this example only features the ideal PID controller, that is without a filter term for its D-term.
 
