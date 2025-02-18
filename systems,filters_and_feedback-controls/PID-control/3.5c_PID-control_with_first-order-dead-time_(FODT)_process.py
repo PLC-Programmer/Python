@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-2025-02-14/15/17
+2025-02-14/15/17/18
 
 3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py
 
 
+rev.2025-02-18: option for bounded controller output; anti-windup option
 rev.2025-02-17: apply noise to x1(t) only at the end of the Runge–Kutta loop!
 
 
@@ -22,11 +23,17 @@ idea: Computer-Simulation von Regelungen - book, 1999, E.-G. Feindt:
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import font_manager
 
 
 # ini values:
 tstart = 0.0
 h = 0.01  # delta t
+
+BOUND = True  # True = bounded controller output (for dead time process)
+U_MAX = 2.0   # absolute
+
+ANTIWINDUPACTION = True
 
 # PT1 process coefficients:
 b0 = 1.0
@@ -86,10 +93,27 @@ def DIFF_EQU(x_1, x_2, x_5):
     # PID controller output:
     u  = Kp*(w_1 - x_1 + 1/Tn*x_5 + Tv*(w1_deriv - x_2))
 
-    f1  = b0 * u - a0 * x_1  # PT1 process
-    f5 = w_1 - x_1  # control error
-    return f1, f5
+    ANTIWINDUP = False
+    if BOUND is True:
+        if abs(u) > U_MAX:
+            u = np.sign(u) * U_MAX
+            ANTIWINDUP = True
 
+    f1  = b0 * u - a0 * x_1  # PT1 process
+
+    if ANTIWINDUPACTION is True:
+        if ANTIWINDUP is False:
+            f5 = w_1 - x_1  # control error which goes into the integrator of controller
+        else:
+            f5 = 0.0  # no more control error in this case
+    else:
+        f5 = w_1 - x_1
+
+    return f1, f5, u
+
+
+# for monitoring:
+u_dt = np.zeros([STEPS])
 
 # system simulation loop with process dead time:
 for k in range(1,STEPS):
@@ -107,25 +131,25 @@ for k in range(1,STEPS):
     x1_ = x1[k-1]
     x2_ = x2[k-1]
     x5_ = x5[k-1]
-    f1_, f5_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k1 = h * f1_
     o1 = h * f5_
     x1_ = x1[k-1] + k1 / 2.0
     x5_ = x5[k-1] + o1 / 2.0
-    f1_, f5_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k2 = h * f1_
     o2 = h * f5_
     x1_ = x1[k-1] + k2 / 2.0
     x5_ = x5[k-1] + o2 / 2.0
-    f1_, f5_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k3 = h * f1_
     o3 = h * f5_
     x1_ = x1[k-1] + k3 / 2.0
     x5_ = x5[k-1] + o3 / 2.0
-    f1_, f5_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k4 = h * f1_
     o4 = h * f5_
@@ -136,6 +160,8 @@ for k in range(1,STEPS):
     x2[k] = x2_
     x5[k] = x5_
 
+    u_dt[k] = u_
+
 
 
 # system simulation loop without process dead time:
@@ -144,25 +170,25 @@ for k in range(1,STEPS):
     x1_ = x1no[k-1]
     x2_ = x2no[k-1]
     x5_ = x5no[k-1]
-    f1_, f5_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k1 = h * f1_
     o1 = h * f5_
     x1_ = x1no[k-1] + k1 / 2.0
     x5_ = x5no[k-1] + o1 / 2.0
-    f1_, f5_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k2 = h * f1_
     o2 = h * f5_
     x1_ = x1no[k-1] + k2 / 2.0
     x5_ = x5no[k-1] + o2 / 2.0
-    f1_, f5_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k3 = h * f1_
     o3 = h * f5_
     x1_ = x1no[k-1] + k3 / 2.0
     x5_ = x5no[k-1] + o3 / 2.0
-    f1_, f5_ = DIFF_EQU(x1_, x2_, x5_)
+    f1_, f5_, u_ = DIFF_EQU(x1_, x2_, x5_)
 
     k4 = h * f1_
     o4 = h * f5_
@@ -224,14 +250,28 @@ plt.title(f'with Gaussian noise with sigma={SIGMA}', y = 1.0)
 plt.plot(t,x1, label=f'control parameters: Kp={Kp:.2f}, Tn={Tn:.3f}, Tv={Tv:.4f}\
 \nreference jump to 1.0 at time 0', color="orange")
 
-plt.plot(t,x1no, label='same PID control without process dead time\
-\n(only noisy 1st order lag)')
+if BOUND is True:
+    plt.plot(t,u_dt, label='bounded controller output with dead time process',\
+    color="orange", linestyle='--')
+else:
+    plt.plot(t,u_dt, label='unbounded controller output with dead time process',\
+    color="orange", linestyle='--')
 
-plt.plot(t,x1nc, label='only noisy FODT response without control', color="grey")
+plt.plot(t,x5, label='state variable for integral part I of controller',\
+color="orange", linestyle=':')
+plt.plot([],[], label=f'anti-windup in action: {ANTIWINDUPACTION}',\
+color="red")
+
+# plt.plot(t,x1no, label='same PID control without process dead time\
+# \n(only noisy 1st order lag)')
+
+# plt.plot(t,x1nc, label='only noisy FODT response without control', color="grey")
 
 plt.xlabel(f't [sec], stepping h={h} [sec]')
 plt.ylabel('system state x1 (process output, measurement)')
-plt.legend(loc="center")
+
+font = font_manager.FontProperties(size=9)
+plt.legend(loc="upper right", prop=font)
 
 plt.grid()
 plt.show()
