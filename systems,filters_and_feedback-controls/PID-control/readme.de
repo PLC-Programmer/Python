@@ -1,0 +1,89 @@
+------
+
+2025-02-17
+
+Revised version of *3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py*: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py
+
+This was needed to improve the handling of noise on the measurement, that is state variable x1. Before, noise was added in every call of function *DIFF_EQU*, something which is not very logical.
+
+Now, a noise signal is generated once and before a system simulation loop and applied commonly to all system simulation loops to compare apples to apples:
+
+*SIGMA = 0.0035  # sigma of noisy measurement*
+
+*x1_noise = 1.0 + np.random.normal(0.0, SIGMA, STEPS)*
+
+It's only added to x1 at the end of a system simulation loop, for example:
+
+...
+
+*x1[k] = x1_ * x1_noise[k-1]*
+
+*x2[k] = x2_*
+    
+*x5[k] = x5_*
+
+
+------
+
+2025-02-15
+
+Added *3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py* file https://github.com/PLC-Programmer/Python/blob/master/systems,filters_and_feedback-controls/PID-control/3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py which implements an algorithm for a PID controller, a PID controller which actually includes a **derivative term** (D-term).
+
+The excellent book "Computersimulation von Regelungen: Modellbildung und Softwareentwicklung" by Ernst-Guenther Feindt from 1999 (https://books.google.de/books/about/Computersimulation_von_Regelungen.html?id=745dDwAAQBAJ&redir_esc=y) shows a couple of examples (back in those days implemented in QBasic: https://en.wikipedia.org/wiki/QBasic) for a PI controller, but not a PID controller.
+
+Additionally, I added **dead time** to a first-order lag process ("PT1"), which is commonly known as **FODT**.
+
+\
+(a)
+
+Similar to the *6.4c_SECOND-ORDER ALLPASS_step_response.py* example, the transfer function Gc(s) of a PID controller features a **derivative in its numerator polynomial** (s·Kd), which may be a challenge for the computational implementation:
+
+Gc(s) = Kp + Ki/s + s·Kd = U(s)/E(s)
+
+U(s): controller output
+
+E(s): control error = reference value - measurement value
+
+For the implementation I followed the idea from the book mentioned above for a PI controller as described in chapter "3.3 Simulation des Reglers mit Integralanteil".
+The controller output signal of an ideal PID controller can be described like this in the time domain:
+
+u(t) = Kp·(e(t) + 1/Tn·∫e(t)·dt + Tv·e(t)'  with e(t)' = de(t)/dt etc.
+
+Controller error is like usual: e(t) = w1 (reference) - x1 (state variable 1 = measurement = process output) which leads to its derivative: e' = w1' - x1' =  w1' - x2
+
+Arbitrarily we assign state variable x5 to the integral over the control error: x5 := ∫(w1 - x1)·dt
+
+Then the only open issue is a step (or jump) at the reference signal w1(t). Chapter "8.3 Regelkreis-Simulation mit Approximation der Sprungfunktion" just takes the reciprocal value of the program stepping (here 0.01\[sec\]) for it: w1' = 1/h
+
+This works well as long as h is small enough compared to the time constants of the control loop (which is the case here).
+
+Finally, the controller output signal for an ideal PID controller becomes:
+
+u = Kp·(w1 - x1 + 1/Tn·x5 + Tv·(w1' - x2))
+
+And here the remaining state variables and their derivatives:
+
+x2 := x1' = f1 = b0·u - a0·x1 (the first-order lag process here)
+
+x5' = f5 = w1 - x1
+
+\
+(b)
+
+I added slight noise to the measurement signal x1 to visually show the effect of the controller's D-term on the control quality.
+
+It's really visible if you compare it with the uncontrolled but smoother process response in gray color:
+
+![plot](./systems%2Cfilters_and_feedback-controls/PID-control/pictures/3.5c_PID-control_with_first-order-dead-time_(FODT)_process%20--%20PID%2BPT1%20with%20noise%2C%20dead%20time%2C%20FODT%20response.png)
+
+However, to not make things too complicated in one batch this example only features the ideal PID controller, that is without a filter term for its D-term.
+
+\
+(c)
+
+As to be expected, the D-term can indeed accelerate the forcing of an otherwise sluggish process to a desired reference value.
+
+On the other hand, dead time in such a process "makes satisfactory control more difficult to achieve" (see this excellent presentation (++): https://engineering.nyu.edu/mechatronics/Control_Lab/Criag/Craig_RPI/2002/Week2/First-Order_Process_Time_Delay_2002.pdf):
+
+* with relevant dead time in the process the response of the closed control loop leads to more **overshooting** (all other things equal), a phenomenon - together with a noisy measurement in real life - which "always reduces the stability of a system and limits the achievable response time of the system" (++)
+
