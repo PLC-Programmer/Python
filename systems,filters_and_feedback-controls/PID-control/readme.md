@@ -10,6 +10,7 @@ https://ieeexplore.ieee.org/document/9933758
 
 by Wen Tan, Wenjie Han, Jiaohu Xu
 
+\
 I successfully implemented a PI controller as a state-space controller, but failed so far with an "ideal" PID controller (no low-pass filtering on the derivative term, D-term), not to mention a "real" PID controller (low-pass filtering on the D-term).
 
 Source (0) clearly shows the way to success for a PID controller as a state-space controller: the derivative of the plant output, that is the derivative of measurement y(t), has to be estimated by a suitable observer, that is an **extended state observer** with proper observer gain. This is true for the ideal PID controller as well as the real PID controller.
