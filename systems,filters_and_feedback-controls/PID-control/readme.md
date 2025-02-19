@@ -2,7 +2,23 @@
 
 ------
 
-2025-02-19
+2025-02-19b
+
+re "..do you want to **increase** the value of parameter Tv, that is Td, significantly for "good" derivative action.."
+
+--> this is the reason why at the bottom of the program I provisionally provided these print statements:
+```
+print("min(D_KJA)=",min(D_KJA))
+print("max(D_KJA)=",max(D_KJA))
+```
+..to see what are the maximum (peak) contributions of the D-term during a test. It may give a clue where to move the value of parameter Td (= Tv). This is especially true when the parameter value is so off (with a certain PID-implementation) that the test *numerically* derails.
+
+  
+
+
+------
+
+2025-02-19a
 
 Without further ado here's the Python source code of a PID controller according to the two algorithms mentioned below: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/3.5c_real_PID-control_with_PT1_process.py
 
