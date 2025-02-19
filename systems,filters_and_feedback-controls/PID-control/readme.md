@@ -31,7 +31,7 @@ d2 = Tf/(h + Tf)
 
 Parameters c1, c2, c3, d1 and d2 look plausible with 10.53, 11.38, 10.47, 1.95 and 0.95 respectively.
 
-However, only after step number 25 or so error term e_zr[k] starts to go wild:
+However, only after step number 25 or so error term e_zr[k] starts to go wild with the same control parameter values as used with the "van de Logt"- and "Karl Johan Åström"-algos:
 
 ![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/pictures/3.5c1_real_PID-control_with_PT1_process%20--%20Zacher%2C%20Reuter%2C%20page%20339%2C%2016.%20Auflage.png)
 
