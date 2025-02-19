@@ -65,6 +65,10 @@ It only goes back one time step to calculate a new value for the D-term!
 
 Mr Åström apparently also pulls out another "trick" out of his hat: the I-term (integration term) is only calculated **after** the new value of the controller output u[k]! I changed that to see if I break things. I broke things.
 
+Beside this, it's clear that the "Karl Johan Åström"-implementation of a PID controller is a rougher approximation of the continuous, real, textbook-PID controller. It's explained in his paper for example for the D-term from equation (6.16.) onwards.
+
+What I've learned so far is that with **discretizations** of principially analog systems **details** matter a lot.
+
 \
 So, I took the "van de Logt"-algorithm and manually tuned it so that it approximately matches the step response curve of the "Karl Johan Åström"-algorithm:
 
@@ -99,7 +103,7 @@ At last, I made this test: what happens if I leave away the D-term from the "Kar
 
 While its step resonse looks OK, this controller allows for more overshooting at the pulse disturbance. So, D-terms have an effect!
 
-I say this because I saw it numerous times that people activated the D-term of their controller only to be disappointed. Yes, the D-term is apparently the tricky one: do you want to **increase** its parameter Tv, that is Td, significantly for "good" derivative action, only to wait for an unexpected disturbance at the measurement which may result in a controller to go out of control and to play havoc with your plant?!?
+I say this because I saw it numerous times that people activated the D-term of their controller only to be disappointed. The D-term is apparently the tricky one: do you want to **increase** the value of parameter Tv, that is Td, significantly for "good" derivative action only to wait for an unexpected disturbance at the measurement which may result in a controller to go out of control and to play havoc with your plant?!?
 
 \
 By the way: the amplitude of this pulse disturbance is only 0.01 (at *DIST_VAL*), but it causes suprisingly hefty reactions.
