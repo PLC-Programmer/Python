@@ -1,4 +1,29 @@
-2025-02-18: work in progress
+2025-02-19: work in progress
+
+------
+
+2025-02-19
+
+Without further ado here's the Python source code of a PID controller according to the two algorithms mentioned below: *3.5c_real_PID-control_with_PT1_process.py*: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/3.5c_real_PID-control_with_PT1_process.py
+
+This is only a first (workable) version without bells and whistles. So you won't probably want to use it in a real production environment (textbooks almost never care about this aspect).
+
+Here the individual responses to a unit step jump of the set point (= reference) of both algos:
+
+![plot](./pictures/3.5c_real_PID-control_with_PT1_process%20a.png]
+
+
+ 
+
+
+
+
+
+
+
+------
+
+2025-02-18
 
 Implementation of a PID controller as a **state-space controller** isn't so easy (for me) but apparently doable: 
 
