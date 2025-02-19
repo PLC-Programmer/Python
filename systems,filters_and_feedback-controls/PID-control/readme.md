@@ -13,8 +13,37 @@ print("max(D_KJA)=",max(D_KJA))
 ```
 ..to see what are the maximum (peak) contributions of the D-term during a test. It may give a clue where to move the value of parameter Td (= Tv). This is especially true when the parameter value is so off (with a certain PID-implementation) that the test *numerically* derails.
 
-  
+\
+re  "This derivative term can easily cause numerous problems with a practical implementation, and be it only with the numerical stability of an algorithm. Textbook implementations, including their online versions, may sooner or later show their weaknesses.":
 
+Here's an example: this otherwise great and concise book on control engineering (in German language only: https://link.springer.com/book/10.1007/978-3-658-45897-3), features (at least in the prior 16th edition available to me) this PID algorithm on page 339:
+```
+c1 = Kp*h/(h + Tf)*(1 + (h + Tf)/(2.0*Tn) + (Tf + Tv)/h)
+c2 = Kp*h/(h + Tf)*(h/(2.0*Tn) + 2.0*(Tf + Tn)/h - 1.0)
+c3 = Kp*h/(h + Tf)*((Tf + Tv)/h - Tf/(2.0*Tn))
+d1 = 1.0 + Tf/(h + Tf)
+d2 = Tf/(h + Tf)
+...
+    e_zr[k] = w_1 - x1_zr[k]
+    y[k] = d1*y[k-1] - d2*y[k-2] + c1*e_zr[k] + c2*e_zr[k-1] + c3*e_zr[k-2]
+...
+```
+
+Parameters c1, c2, c3, d1 and d2 look plausible with 10.53, 11.38, 10.47, 1.95 and 0.95 respectively.
+
+However, only after step number 25 or so error term e_zr[k] starts to go wild:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/pictures/3.5c1_real_PID-control_with_PT1_process%20--%20Zacher%2C%20Reuter%2C%20page%20339%2C%2016.%20Auflage.png)
+
+(for this quick diagram I used these online tools: https://www.graphreader.com/plotter + https://pinetools.com/generate-list-numbers)
+
+.. which makes the Python interpreter complaining like this after a while: "..RuntimeWarning: overflow encountered in scalar multiply"
+
+So, it makes perfect sense to consider **only changes of the measurement for the control** error at some terms of the textbook PID algorithm, specifically for the D-term, at least in some situations.
+
+However and on the other hand, with a simulation where a perfect "measurement" without noise has to start from point 0.0 a set point change might be the only trigger to start the simulation!
+
+   
 
 ------
 
