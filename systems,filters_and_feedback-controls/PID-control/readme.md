@@ -22,7 +22,7 @@ Here's a new version for this: https://github.com/PLC-Programmer/Python/blob/mas
 \
 To 1.:
 
-The simple process model in use (1st order lag, "PT1") doesn't explicitly model a real, physical actuator, but in reality there's most probably one. So, an actuator - which its physical limits - is implicitly modeled within the process model.
+The simple process model in use (1st order lag, "PT1") doesn't explicitly model a real, physical actuator, but in reality there's most probably one. So, an actuator - with its physical limits - is implicitly modeled within the process model.
 
 Here are some more variables shown of an actually unbounded controller since it's minimum and maximum output values in this use case are only 0.0 and 1.10 respectively, values which are safely within the output bounds:
 
