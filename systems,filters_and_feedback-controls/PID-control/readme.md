@@ -1,4 +1,79 @@
-2025-02-19: work in progress
+2025-02-20: work in progress
+
+------
+
+2025-02-20
+
+(a)
+
+From now on, I will only use the "Karl Johan Åström"-PID algorithm.
+
+\
+(b)
+
+There's no good production-ready PID controller without:
+
+1. possibility to bound its output u(t) (here to simulate the physical limitations in the real world)
+
+2. implementation of an anti-windup mechanism for its integrator
+
+Here's a new version for this: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/3.5d_real_PID-control_with_PT1_process_u-bounded_anti-windup.py
+
+\
+To 1.:
+
+The simple process model in use (1st order lag, "PT1") doesn't explicitly model a real, physical actuator, but in reality there's most probably one. So, an actuator - which its physical limits - is implicitly modeled within the process model.
+
+Here are some more variables shown of an actually unbounded controller since it's minimum and maximum output values in this use case are only 0.0 and 1.10 respectively, values which are safely within the output bounds:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/pictures/3.5d_real_PID-control_with_PT1_process_u-bounded_anti-windup.py%20-%20U_MAX_1.50.png)
+
+Now a test with narrower bounds of -1.0 <= u(t) <- +1.0:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/pictures/3.5d_real_PID-control_with_PT1_process_u-bounded_anti-windup.py%20-%20U_MAX_1.00.png)
+
+\
+To 2.:
+
+The unbounded PID algorithm makes another problem visible: **integrator saturation**!
+
+While the controller output is still moving, the actuator might have already hit a limit for some time or even a long time!
+
+=> long story short: the closed control loop may become unstable or even more unstable and under most, if not even all circumstances the control quality will suffer!
+
+Luckily **anti-windup** is taking care of this unwanted phenomenon: as soon as the controller (or actuator respectively) hits a limit any further integration at the I-term of the PID controller is stopped:
+
+```
+    # controller output:
+    u_KJA[k] = P_KJA + I_KJA[k] + D_KJA[k]
+
+    ANTIWINDUP = False
+    if BOUND is True:
+        if abs(u_KJA[k]) > U_MAX:
+            u_KJA[k] = np.sign(u_KJA[k]) * U_MAX
+            ANTIWINDUP = True
+```
+...
+```
+        if ANTIWINDUPACTION is True:
+            if ANTIWINDUP is False:
+                # control error which goes into the integrator of controller
+                control_error = w_1 - x1[k]
+            else:
+                control_error = 0.0  # no more control error in this case
+        else:
+            control_error = w_1 - x1[k]
+```
+
+
+\
+Positive effect: the value of the integrator output stays well below the maximum value of the case without anti-windup and controller output u(t) can leave its upper bound much sooner and the target process value of 1.0 is reached with less overshooting. See the blue, dotted lines in the two diagrams shown above.
+
+Here's a diagram which compares the measurment values of both cases: (practically) unbounded controller output in orange color versus bounded controller output in blue color:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/pictures/3.5d1_real_PID-control_with_PT1_process_compare_bounded_with_unbounded.png)
+
+While the anti-windup effect is most profound at the initial set point step change, it's still (accidently, albeit slightly) visible at the measurement disturbance from second 15 on.
 
 ------
 
