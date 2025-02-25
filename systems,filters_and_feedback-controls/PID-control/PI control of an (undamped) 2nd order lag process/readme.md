@@ -40,7 +40,7 @@ https://github.com/PLC-Programmer/Python/blob/master/systems,filters_and_feedbac
 
 <br/>
 
-### First exercise: How to generally model a 2nd order lag process (without state-space representation)? -- Approximations of continuous time differential equations
+### 1/ First exercise: How to generally model a 2nd order lag process (without state-space representation)? -- Approximations of continuous time differential equations
 
 I refer to this excellent paper from 2013 by Prof Lino Guzzella: **"Discrete Time Control Systems"**:
 
@@ -149,59 +149,85 @@ Simulation outcome looks like this (with the later given task to find controller
 
 This looks very promising.
 
-<TBC>
+<br/>
 
+### 2/ How good is the Karl Johan Åström-PI controller with the Euler forward emulation of the PT2 process?
 
+Here's the state-space algorithm as presented in the "Computer simulation of controls"-book linked above in my Python implementation: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process/3.5e1_PI-control-loop_with_2nd_order_lag_process_non-state-space.py
 
+```
+def DIFF_EQU(x_1, x_2, x_3):
+    ...
+    u_   = Kp * (w_1 - x_1 + x_3/Tn)  # controller output
+    ...
+    f1  = x_2
+    f2  = b0 * u_ - a0 * x_1 - a1 * x_2  # PT2 term
+    f3  = w_1 - x_1
+    return f1, f2, f3
 
+# system simulation loop:
+for k in range(1,STEPS):
+    # using Runge–Kutta method:
+    x1_ = x1ss[k-1]
+    x2_ = x2ss[k-1]
+    x3_ = x3ss[k-1]
+    f1_, f2_, f3_ = DIFF_EQU(x1_, x2_, x3_)
 
+    k1 = h * f1_
+    l1 = h * f2_
+    m1 = h * f3_
+    x1_ = x1ss[k-1] + k1 / 2.0
+    x2_ = x2ss[k-1] + l1 / 2.0
+    x3_ = x3ss[k-1] + m1 / 2.0
+    f1_, f2_, f3_ = DIFF_EQU(x1_, x2_, x3_)
 
+    k2 = h * f1_
+    l2 = h * f2_
+    m2 = h * f3_
+    x1_ = x1ss[k-1] + k2 / 2.0
+    x2_ = x2ss[k-1] + l2 / 2.0
+    x3_ = x3ss[k-1] + m2 / 2.0
+    f1_, f2_, f3_ = DIFF_EQU(x1_, x2_, x3_)
 
+    k3 = h * f1_
+    l3 = h * f2_
+    m3 = h * f3_
+    x1_ = x1ss[k-1] + k3 / 2.0
+    x2_ = x2ss[k-1] + l3 / 2.0
+    x3_ = x3ss[k-1] + m3 / 2.0
+    f1_, f2_, f3_ = DIFF_EQU(x1_, x2_, x3_)
 
+    k4 = h * f1_
+    l4 = h * f2_
+    m4 = h * f3_
+    x1_ = x1ss[k-1] + (k1 + 2.0*k2 + 2.0*k3 + k4) / 6.0
+    x2_ = x2ss[k-1] + (l1 + 2.0*l2 + 2.0*l3 + l4) / 6.0
+    x3_ = x3ss[k-1] + (m1 + 2.0*m2 + 2.0*m3 + m4) / 6.0
 
+    x1ss[k] = x1_
+    x2ss[k] = x2_
+    x3ss[k] = x3_
+```
 
+The generated outcome of this algorithm based on the Runge-Kutta 4th order method ("RK4") is the **benchmark** for my non-state-space implementations for the given control task.
 
+State variable x1ss[k] is equivalent to measurement x1[k] and so the later should follow x1ss[k] as close as possible.
 
+By the way and as mentioned here : https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods:
 
+_..the simplest Runge–Kutta method is the (forward) Euler method.._
 
+<br/>
 
+When I overlay the curves of both simulations, the result looks like this:
 
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process/3.5e1_PI-control-loop_with_2nd_order_lag_process_non-state-space%20-%20a.png)
 
+That's really close in my opinion, specifically when you consider that in real life measurement x1 can by really noisy.
 
+Here's the difference plot of x1ss and x1: 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process/3.5e1_PI-control-loop_with_2nd_order_lag_process_non-state-space%20-%20b.png)
 
 
 
