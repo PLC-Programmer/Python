@@ -183,7 +183,11 @@ It only goes back one time step to calculate a new value for the D-term!
 
 (y[k] is equivalent to x1[k])
 
-Mr Åström apparently also pulls out another "trick" out of his hat: the I-term (integration term) is only calculated **after** the new value of the controller output u[k]! I changed that to see if I break things. I broke things.
+<br/>
+
+### Execution order
+
+Prof Åström apparently also pulls out another "trick" out of his hat: the I-term (integration term) is only calculated **after** the new value of the controller output u[k]! I changed that to see if I break things. I broke things.
 
 Beside this, it's clear that the "Karl Johan Åström"-implementation of a PID controller is a rougher approximation of the continuous, real, textbook-PID controller. It's explained in his paper for example for the D-term from equation (6.16.) onwards.
 
