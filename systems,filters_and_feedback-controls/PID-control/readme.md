@@ -1,4 +1,4 @@
-2025-02-25: story continues here: https://github.com/PLC-Programmer/Python/tree/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process
+2025-02-25: story continues here at "PI control of an (undamped) 2nd order lag process": https://github.com/PLC-Programmer/Python/tree/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process
 
 ------
 
