@@ -105,7 +105,7 @@ X·z² = h²·b0·U + (2 - h·a1)·z·X + (a1·h - a0·h² - 1)·X
 
 <br/>
 
-Now there's another "trick" to know. We know from the Karl Johan Åström-implementation of a PID controller that execution order is essential: https://github.com/PLC-Programmer/Python/tree/master/systems%2Cfilters_and_feedback-controls/PID-control#execution-order
+Now there's another "trick" to know. We learned from the Karl Johan Åström-implementation of a PID controller that execution order is essential: https://github.com/PLC-Programmer/Python/tree/master/systems%2Cfilters_and_feedback-controls/PID-control#execution-order
 
 One can now play to shift the z-operator to a lower or higher order if helpful with the later implementation of the whole simulation loop. Remember:
 
