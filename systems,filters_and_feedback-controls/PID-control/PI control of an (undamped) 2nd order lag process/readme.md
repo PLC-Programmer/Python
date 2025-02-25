@@ -11,7 +11,7 @@ Actually, this book is the source of my motivation for the whole "PID control" d
 Ironically this book does not feature a PID controller, all examples are only done with PI controllers.
 
 <br/>
-The featured process can be modeled with transfer function G(s) =  = b0 / (s² + a1·s + a0)
+The featured process can be modeled with transfer function **G(s) =  = b0 / (s² + a1·s + a0)**
 
 with these parameters:
 
