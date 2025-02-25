@@ -8,7 +8,7 @@ Modellbildung und Softwareentwicklung"** (https://www.degruyter.com/document/doi
 
 Actually, this book is the source of my motivation for the whole "PID control" directory: https://github.com/PLC-Programmer/Python/tree/master/systems%2Cfilters_and_feedback-controls/PID-control
 
-Ironically this book does not feature a PID controller, all examples are only done with PI controllers.
+Ironically this book does not feature a PID controller, all examples are only done with PI controllers (or state-space controllers).
 
 <br/>
 
@@ -91,7 +91,7 @@ X(z) / U(z) = b0 / ((z - 1)²/h² + a1·(z - 1)/h + a0)
 
 <br/>
 
-The "trick" here is to put the term of X with the highest power of z on the **left hand side of the equation**, and only this term, and all the rest to the other side:
+The "trick" here is to put the term of X with the highest power of z to the **left hand side of the equation**, and only this term, and all the rest to the other side:
 
 starting with: X / U = b0 / ((z - 1)²/h³ + a1·(z - 1)/h + a0) ...
 
@@ -317,11 +317,75 @@ Well, it gets a little bit worse:
 
 _absolute, maximum relative difference of (Euler backward-PI controller+ Euler forward process) - state-space solution: 0.870828%_
 
-So for now I suggest to not mix both emulations if not needed.
-
-<TBD -- bilinear/Tustin transformation>
+So for now I suggest not to mix both emulations if not needed.
 
 
+### 5/ Last exercise: bilinear transform of PI controller and process
+
+With a bilinear transform, also called **Tustin's method** or Tustin's approximation in this case because it's a specific form of the general bilinear transform A·(z-1)/(z+1), here with A = 2/h, both controller and process will be approximated with: s ≈ 2/h·(z-1)/(z+1).
+
+In the related literature you may also see this equivalent form: s ≈ 2/h·(1 - z^(-1)) / (1 + z^(-1))
+
+Again, after some re-formulations the PI controller difference equation becomes this:
+
+u(k) = 1/(2·Tn)·(Kp·(2·Tn + h)·e(k) + Kp·(h-2·Tn)·e(k-1) + 2·Tn·u(k-1))
+
+..and the difference equation of the PT2 process this monster:
+
+x(k+1) = 1/(a0·h² + 2·a1·h + 4) · (b0·h²·(u(k+1) + 2·u(k) + u(k-1)) - (2·a0·h² - 8)·x(k) - (a0·h² - 2·a1·h + 4)·x1(k-1) )
+
+(it took me some time to get these equations really right. Source code is the master in case of doubt: [https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process/3.5e_PI-control-loop_with_2nd_order_lag_process_non-state-space.py](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process/3.5e5_PI-control-loop_with_2nd_order_lag_process_bilinear.py))
+
+The resulting maximum difference of x1 to the state-space benchmark solution increased to:
+
+_absolute, maximum relative difference of bilinear PI controller - state-space solution: 0.996544%_
+
+..and thus represents the worst result so far.
+
+<br/>
+
+However, there's a little problem with the bilinear transform of the PT2 process and it's this:
+
+* the original time shift of the measurement with x(k+2) on the left hand side of the equation is the same as the highest time shift of the controller output signal, also with u(k+2)
+
+So far, with an Euler forward or Euler backward emulation, the latest controller output signal was one time step behind the measurement signal on the left hand side of the difference equation!
+
+I have not been able to find a working solution with both difference equations in their original form. At least I didn't have to manipulate the difference equation of the controller output.
+
+After some experimentation I took the radical measure to shift all three controller output signals by one time step into the past at the right hand side of the equation:
+
+```
+    if k < STEPS-1:
+        # bilinear approximation of
+        # process transfer function G(s) = b0 / (s**2 + a1*s + a0)
+        # ...
+        x1_bilin[k+1] = 1/(a0*h**2.0 + 2*a1*h + 4.0) *\
+                        (b0*h**2.0*(u_bilin[k] + 2.0*u_bilin[k-1] + u_bilin[k-2])\
+                        - (2.0*a0*h**2.0 - 8.0) * x1_bilin[k]\
+                        - (a0*h**2.0 - 2.0*a1*h + 4.0) * x1_bilin[k-1])
+```
+
+Only then I got an acceptable simulation result:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process/3.5e5_PI-control-loop_with_2nd_order_lag_process_bilinear.png)
+
+If I'm not doing this downshifting, the simulation result looks shifted like this:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process/3.5e5_PI-control-loop_with_2nd_order_lag_process_bilinear%20--%20original%20diff.equation.png)
+
+<br/>
+
+<TBD>
 
 
+### 6/ Some last(?) remarks
+
+See the system simulation loop starting with:
+
+```
+for k in range(1,STEPS):
+    ...
+```
+
+<TBD>
 
