@@ -235,7 +235,9 @@ I have no clue why this is so.
 
 2025-02-18
 
-Implementation of a PID controller as a **state-space controller** isn't so easy (for me) but apparently doable: 
+### Implementation of a PID controller as a state-space controller
+
+The implementation of a PID controller as a **state-space controller** isn't so easy (for me) but apparently doable: 
 
 (0)
 
