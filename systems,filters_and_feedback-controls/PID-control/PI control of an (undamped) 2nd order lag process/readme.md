@@ -340,15 +340,15 @@ The resulting maximum difference of x1 to the state-space benchmark solution inc
 
 _absolute, maximum relative difference of bilinear PI controller - state-space solution: 0.996544%_
 
-..and thus represents the worst result so far.
+..and thus represents the worst result so far!
 
 <br/>
 
 However, there's a little problem with the bilinear transform of the PT2 process and it's this:
 
-* the original time shift of the measurement with x(k+2) on the left hand side of the equation is the same as the highest time shift of the controller output signal, also with u(k+2)
+* the original time shift of the measurement with x(k+2) on the left hand side of the equation is the same as the highest time shift of the controller output signal on the right hand side, also with u(k+2)
 
-So far, with an Euler forward or Euler backward emulation, the latest controller output signal was one time step behind the measurement signal on the left hand side of the difference equation!
+So far, with an Euler forward or Euler backward emulation, the latest controller output signal was one time step behind the measurement signal on the left hand side of the difference equation.
 
 I have not been able to find a working solution with both difference equations in their original form. At least I didn't have to manipulate the difference equation of the controller output.
 
@@ -375,7 +375,24 @@ If I'm not doing this downshifting, the simulation result looks shifted like thi
 
 <br/>
 
-<TBD>
+Referring to Prof Guzzella's paper (see link above), I'm a little bit surprised by this statement on page 23:
+
+_Especially the Tustin transformation is often used in practice._
+
+However, I'm aware of the fact that the Tustin transformation plays an essential role in the design of discrete (filter) systems. And I guess it's clear why.
+Just look at page 19-5 from this paper https://ocw.mit.edu/courses/2-161-signal-processing-continuous-and-discrete-fall-2008/01a02bd64301037fa5b04e826e238b5a_lpfdesign.pdf for example:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process/stability.png)
+
+
+
+
+However, at this moment I would not procede with the bilinear transform of a process or the controller.
+
+For now and the next simulations, I guess I will stick with the Åström-PI(D) controller and the Euler forward emulation of a process.
+
+
+
 
 
 ### 6/ Some last(?) remarks
