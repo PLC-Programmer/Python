@@ -380,11 +380,9 @@ Referring to Prof Guzzella's paper (see link above), I'm a little bit surprised 
 _Especially the Tustin transformation is often used in practice._
 
 However, I'm aware of the fact that the Tustin transformation plays an essential role in the design of discrete (filter) systems. And I guess it's clear why.
-Just look at page 19-5 from this paper https://ocw.mit.edu/courses/2-161-signal-processing-continuous-and-discrete-fall-2008/01a02bd64301037fa5b04e826e238b5a_lpfdesign.pdf for example:
+Just look at page 19-5 from this lecture (https://ocw.mit.edu/courses/2-161-signal-processing-continuous-and-discrete-fall-2008/01a02bd64301037fa5b04e826e238b5a_lpfdesign.pdf) for example:
 
-![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process/stability.png)
-
-
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process/stability2.png)
 
 
 However, at this moment I would not procede with the bilinear transform of a process or the controller.
