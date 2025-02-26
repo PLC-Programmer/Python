@@ -384,23 +384,70 @@ Just look at page 19-5 from this lecture (https://ocw.mit.edu/courses/2-161-sign
 
 ![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process/stability3.png)
 
-
 However, at this moment I would not procede with the bilinear transform of a process or the controller.
 
 For now and the next simulations, I guess I will stick with the Åström-PI(D) controller and the Euler forward emulation of a process.
 
+### 6/ Some remarks on experimemts
 
+While I have been experimenting with the intractable bilinear transform of PI controller and process, I have also been playing with the range of the system simulation loop.
 
-
-
-### 6/ Some last(?) remarks
-
-See the system simulation loop starting with:
+So far all system simulation loops start with index 1, including the loop for the state-space benchmark solution:
 
 ```
 for k in range(1,STEPS):
     ...
 ```
 
-<TBD>
+By doing so, this loop is not accessing array elements of the "past", that is elements with index lower than 0. The arrays of all relevant variables are initialized to 0 before a system simulation loop:
+```
+# PI algorithm of bilinear approximated controller:
+x1_bilin = np.zeros([STEPS])    # measurement
+control_error = np.zeros([STEPS])
+u_bilin = np.zeros([STEPS])  # controller output
+```
+
+However, NumPy arrays like _np.zeros([ STEPS ])_ can be accessed with negative index values (the "downshifting" at the bilinear solution is the exception; see from above), for example like _x1_bilin[ -1 ]_, which is returning the last measurement value.
+
+As an experiment I started the bilinear system simulation loop with index 0:
+
+```
+for k in range(0,STEPS):
+
+    control_error[k] = w_1 - x1_bilin[k]
+
+    # bilinear-PI controller:
+    u_bilin[k] = 1/(2.0*Tn)*(Kp*(2.0*Tn + h)*control_error[k]\
+                             + Kp*(h - 2.0*Tn)*control_error[k-1]\
+                             + 2.0*Tn*u_bilin[k-1])
+...
+```
+
+The outcome was a better difference value against the state-space benchmark:
+
+_absolute, maximum relative difference of bilinear PI controller - state-space solution: 0.573289%_
+
+That is 0.57% instead of 1.00% when starting with index 1.
+
+The first 6 measurement values look like this now:
+
+_0.00000000e+00, 4.05275272e-05, 2.02298728e-04, 5.24820871e-04, 1.00672264e-03, 1.64661406e-03_
+
+With starting with index 1 they look like this:
+
+_0.00000000e+00, 0.00000000e+00, 4.05275272e-05, 2.02298728e-04, 5.24820871e-04, 1.00672264e-03_
+
+..which makes the step response lagging one time step and thus leads to a higher difference to the state-space benchmark, where the relevant state variable x1ss starts like this:
+
+_0.00000000e+00, 6.76577489e-05, 2.96963885e-04, 6.86537975e-04, 1.23497929e-03, 1.94086731e-03_
+
+To further compare, here are the first 6 measurement values of the step response with the Åström-PI controller and Euler forward emulation of the process (done with with program "3.5e1_PI-control-loop_with_2nd_order_lag_process_non-state-space.py"):
+
+_0. , 0. , 0. , 0.00016279, 0.000487, 0.00097128_
+
+..which is an even more lagging step response at the start, yet this solution leads to a lower maximum difference of 0.865217% than the bilinear solution.
+
+<br/>
+
+So for now, I wouldn't worry too much about how exactly to start a system simulation loop. Instead I try to keep some consistency.
 
