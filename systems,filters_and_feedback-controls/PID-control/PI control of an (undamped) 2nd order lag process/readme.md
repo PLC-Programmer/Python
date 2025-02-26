@@ -1,4 +1,8 @@
-2025-02-25: work in progress
+2025-02-26: story continues here at "PI control Part 2: first-order-dead-time FODT": https://github.com/PLC-Programmer/Python/tree/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20FODT
+
+<br/>
+
+------
 
 The German acronym "PT2" (https://de.wikipedia.org/wiki/PT2-Glied) is equivalent to a "2nd order lag" process.
 
