@@ -28,7 +28,7 @@ which leads to a naturally undamped process with parameters:
 
 <br/>
 
-My final goal in this directory is to have a real PID controller which can control a **first order plus dead time process (FODT)** with acceptable results:
+My final goal is to have a real PI(D) controller which can control a **first order plus dead time process (FODT)** with acceptable results:
 
 https://towardsai.net/p/artificial-intelligence/classic-methods-for-identification-of-first-order-plus-dead-time-fopdt-systems
 
@@ -52,7 +52,7 @@ https://idsc.ethz.ch/the-institute/people/person-detail.MjgwNzc=.TGlzdC82MjMsMjA
 
 Principially, there are three possibilities to **approximate** a continuous time system (like our use case G(s) = b0 / (s² + a1·s + a0)) into a discrete time system.
 
-I guess a "natural", initial choice is always the **Euler forward** approximation (page 17 at the paper above), where the (complex) continuous time variable s is appromimated with:
+I guess a "natural", initial choice is always the **Euler forward** approximation (on page 17 of the paper above), where the (complex) continuous time variable s is appromimated with:
 
 s ≈ (z - 1) / h
 
