@@ -1,4 +1,33 @@
-2025-03-05:
+2025-03-05b:
+
+Now let's put two tanks, each with a PT1 model, in series. Transfer function of this process will look like this:
+
+X1(s)/U(s) = b0 / ((a1·s + a0)·(a1·s + a0))
+
+Again I'm using the Euler forward emulation of this process with its approximation s ≈  (z - 1 ) / h
+
+The resulting (and approximated) transfer function starts to become complicated. So, I'm using the SymPy Live Shell for helping with the indermediate steps: https://live.sympy.org/
+
+```
+a1, a0, b0, X1, U, h, s = symbols('a1, a0, b0, X1, U, h, s')
+s =  (z - 1 ) / h
+X1 = b0 / ((a1*s + a0)*(a1*s + a0)) * U
+simplify(collect(expand(X1),z))
+```
+
+Everything else unchanged, including the controller parameters (https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/3.5f2_PI-control-loop_with_2xPT1_Euler_forward_process.py) the step response looks promising:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/3.5f2_PI-control-loop_with_2xPT1_Euler_forward_process.png)
+
+ 
+I can't call this done according to "(lambda tuning rules)" anymore, so I left this comment away.
+
+Anyhow, the step response became faster, and with a very slight overshoot, which is logical with unchanged controller parameters (which are a little bit too fast now).
+
+
+------
+
+2025-03-05a:
 
 I start with only one tank as my process, that is a PT1 term (lag of first order): https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/3.5f1_PI-control-loop_with_PT1_Euler_forward_process.py
 
