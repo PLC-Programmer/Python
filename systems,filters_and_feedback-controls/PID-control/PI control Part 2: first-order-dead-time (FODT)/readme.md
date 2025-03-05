@@ -1,3 +1,27 @@
+2025-03-05c:
+
+By default the SymPy Live Shell produces an output in form of a LaTeX expression, something which may be of limited use for further human interaction to get the final difference equation for the source code.
+
+So, I expanded the little SymPy script to print the result in plain text format:
+
+```
+a1, a0, b0, X1, U, h, s = symbols('a1, a0, b0, X1, U, h, s')
+s =  (z - 1 ) / h
+X1 = b0 / ((a1*s + a0)*(a1*s + a0)) * U
+result = simplify(collect(expand(X1),z))
+str(result)
+```
+
+In case of the two PT1 terms in series the output in plain text format looks like this:
+
+```
+'U*b0*h**2/(a0**2*h**2 - 2*a0*a1*h + a1**2*(z**2 + 1) + 2*a1*z*(a0*h - a1))'
+```
+
+
+
+------
+
 2025-03-05b:
 
 Now let's put two tanks, each with a PT1 model, in series. Transfer function of this process will look like this:
