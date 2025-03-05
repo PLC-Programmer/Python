@@ -150,7 +150,9 @@ for k in range(1,STEPS):
         #  a1, a0, b0, X1, U, h, s = symbols('a1, a0, b0, X1, U, h, s')
         #  s =  (z - 1 ) / h
         #  X1 = b0 / ((a1*s + a0)*(a1*s + a0)) * U
-        #  simplify(collect(expand(X1),z))
+        #  result = simplify(collect(expand(X1),z))
+        #  str(result)
+        # => 'U*b0*h**2/(a0**2*h**2 - 2*a0*a1*h + a1**2*(z**2 + 1) + 2*a1*z*(a0*h - a1))'
         # run at: https://live.sympy.org/
 
         x1_KJA[k+1] = 1/(a1**2.0) * (2*a1*(a1-a0*h)*x1_KJA[k] \
