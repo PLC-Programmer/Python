@@ -30,7 +30,7 @@ U_MAX = 2.0   # absolute; org 2.0
 
 ANTIWINDUPACTION = False
 
-# 2 x PT1 process coefficients:
+# 3 x PT1 process coefficients:
 b0 = 1.0
 a0 = 1.0
 a1 = 1.0
