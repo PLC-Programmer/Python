@@ -39,6 +39,24 @@ Finally, the step response of the closed control loop with three tanks in series
 ![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/3.5f3_PI-control-loop_with_3xPT1_Euler_forward_process.png)
 
 
+There's a slight modification with this version of the simulation program. It's the starting at index 2, not 1 like before:
+
+```
+for k in range(2,STEPS):
+    ...
+```
+
+By this offset, the program is not reading "values from the past" at the process simulation part:
+
+```
+    # process:
+    if k < STEPS-1:
+        ...
+        x1_KJA[k+1] = 1.0/a1**3.0 * ((a1**3.0 - A0)*x1_KJA[k-2] \
+                                     - 3.0*a1**2.0*(a0*h - a1)*x1_KJA[k] \
+                                     - 3.0*a1*A1*x1_KJA[k-1]
+                                     + b0*h**3.0*u_KJA[k-2])
+```
 
 
 ------
