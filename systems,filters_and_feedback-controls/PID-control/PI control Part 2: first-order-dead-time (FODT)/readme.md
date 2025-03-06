@@ -1,3 +1,48 @@
+2025-03-06:
+
+Now let's put another tank, as a PT1 model again, in series. Then the unit step responses so far look like this:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/3.5f3_PI-control-loop_with_3xPT1_Euler_forward_process%20-%20step%20responses%20PT1%2C%20PT2%2C%20PT3.png)
+
+..and have been generated with this program: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/3.5f3_PI-control-loop_with_3xPT1_Euler_forward_process.py
+
+(this program, at least for now, contains a lot of commented source code lines for all the experimentations)
+
+<br/>
+
+With three tanks in series I can manually and roughly make parameter estimations according to the lambda tuning rules; see from here again: https://blog.opticontrols.com/archives/260
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/Step%20Test%20for%20Lambda%20Tuning.png)
+
+I'm estimating these parameter values:
+
+* dead time td ≈ 0.8 seconds
+* time constant tau ≈ 2.4 seconds
+
+To not have a too sluggish step response under feedback control, I've chosen a "taucl factor" of 1.5: 
+
+*Generally, the value for taucl should be set between one and three times the value of tau.*
+
+```
+tau=2.4  # [sec]; rough human reading
+gp=1.0
+taucl_factor = 1.5  # org: 3.0
+taucl=taucl_factor*tau
+td=0.8  # [sec]; rough human reading
+# =>
+Kp = tau/(gp * (taucl + td))
+Tn = tau
+```
+
+Finally, the step response of the closed control loop with three tanks in series and the chosen control parameters looks like this:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/3.5f3_PI-control-loop_with_3xPT1_Euler_forward_process.png)
+
+
+
+
+------
+
 2025-03-05c:
 
 By default the SymPy Live Shell produces an output in form of a LaTeX expression, something which may be of limited use for further human interaction to get the final difference equation for the source code.
