@@ -1,3 +1,58 @@
+2025-03-07:
+
+Re: *I'm estimating these parameter values at:*
+
+*dead time td ≈ 0.8 seconds*
+
+*time constant tau ≈ 2.4 seconds*
+
+A natural question arises here: can the computer estimate these process parameters conveniently and also more accurately?
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20--%2000.png)
+
+Of course, the program can be expanded for this job:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20--%2001.png)
+
+My idea here is simply to first compute the gradient of the step response d(x1(t))/dt (in blue color above): see from the link below:
+
+*Find the maximum slope of the PV response curve. This will be at the point of inflection. Draw a line tangential through the PV response curve at this point.*
+
+```
+# calculating the gradient of the measurement:
+x1_grad = np.gradient(x1)
+```
+
+To make the really small values of the gradient more visible (*np.max(x1_grad) = 0.002720*) in the same diagram I applied a factor of 20 to the gradient curve.
+
+So, I got this tangential line in black color at the step response:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20--%2002.png)
+
+See again from the link below:
+
+*Dead Time (td) ... Extend this line to intersect with the original level of the PV before the step in CO. Take note of the time value at this intersection.*
+
+*td = time difference between the change in CO and the intersection of the tangential line and the original PV level*
+
+...
+
+*Time Constant (tau) ... tau = time difference between intersection at the end of dead time, and the PV reaching 63% of its total change*
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20--%2003.png)
+
+So, this algorithm estimated these parameter values:
+
+* dead time td ≈ 0.83 seconds
+
+* time constant tau ≈ 2.31 seconds
+
+..which don't seem to too far off from my manual readings.
+
+That was not too complicated to program.
+
+------
+
 2025-03-06:
 
 Now let's put another tank, as a PT1 model again, in series. Then the unit step responses so far look like this:
@@ -14,7 +69,7 @@ With three tanks in series I can manually and roughly make parameter estimations
 
 ![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/Step%20Test%20for%20Lambda%20Tuning.png)
 
-I'm estimating these parameter values:
+I'm estimating these parameter values at:
 
 * dead time td ≈ 0.8 seconds
 * time constant tau ≈ 2.4 seconds
