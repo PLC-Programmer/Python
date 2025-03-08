@@ -12,10 +12,49 @@ if min(x1_grad) < -0.00001:  # leave some room for error
 
 Since we don't have to filter a noisy measurement while the process is developing (online solution with a moving average for example), we can do it after the bump test, here with a Savitzky–Golay filter: https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter
 
-(TBC)
+For example like this:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20--%2006a.png)
+
+However, after some experimentations it shows that finding "good" filter parameters, that is window size and polynomial order, isn't so straightforward.
+
+Just increasing the window size and/or the polynomial order doesn't lead to a "good" solution apparently:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20--%2006g.png)
+
+So, I've written a test routine to check manually what at least the best window size good be by "visual inspection" (a polynomial order of just 1 seems to be a good fit though):
 
 
+```
+ws = np.arange(11,161,10)  # test a range of window sizes
+x1_test_time_ws =  [0.0 for i in ws]
+WS_TESTS = 10000
+time_i = 0
+for ws_i in ws:
+    x1_test_time = []
+    for i in range(0,WS_TESTS):
+        x1_sg = savgol_filter(x1_org, ws_i, 1)  # polynomial order seems to be OK
+        x1_grad_t = np.gradient(x1_sg)
+        max_x1_grad_index_t = np.argmax(x1_grad_t)
+        max_x1_grad_time_t = t[max_x1_grad_index_t]
+        x1_test_time.append(max_x1_grad_time_t)
 
+    x1_test_time_ws[time_i] = np.mean(x1_test_time)
+    time_i += 1
+
+x1_test_time_min = np.empty(len(x1_test_time_ws))
+x1_test_time_min = abs(x1_test_time_ws - max_x1_grad_no_noise_time)
+good_ws = ws[np.argmin(x1_test_time_min)]
+
+print(f'\nA good window size for a Savitzky-Golay filter\
+ based on {WS_TESTS} test runs is {good_ws}\n')
+```
+
+...and as documented in the comment of the test routine (https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/step_response_parameter_estimation_for_lambda_tuning%20-%20experiments.py) this test only showed that moving the window size up and down (with the given noise) doesn't find a convincing solution.
+
+<br/>
+
+What now?
 
 ------
 
