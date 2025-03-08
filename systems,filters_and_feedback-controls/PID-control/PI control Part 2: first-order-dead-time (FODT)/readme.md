@@ -1,3 +1,61 @@
+2025-03-08c
+
+Well, nothing keeps us from applying a Savitzky–Golay filter two times:
+
+```
+if min(x1_grad) < -0.00001:  # leave some room for error
+    NOISE_PRESENT = True
+
+    # Savitzky-Golay (SG) filtering of measurement:
+    WINDOW_SIZE = 41  # 71: manual tuning --> OKish for one filter run
+    POLYNOMIAL_ORDER = 1  # 1: manual tuning --> better tuning rule??
+
+    # 1st filter run:
+    x1_hat = savgol_filter(x1_org, WINDOW_SIZE, POLYNOMIAL_ORDER)
+
+    # 2nd filter run:
+    x1_hat2 = savgol_filter(x1_hat, WINDOW_SIZE, POLYNOMIAL_ORDER)
+
+```
+
+...and Whoa! After some short experimentation a (non-sluggish) window size of 41 with double filtering looks quite convincing:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20--%2006j.png)
+
+Here a double filtered step response:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20--%2006k.png)
+
+With the exception of the (usual) filter artefact (of a Savitzky–Golay filter) at the beginning of the step response, both gradient curves are undistinguishable now:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20--%2006l.png)
+
+..which makes finding a "good" tangential line much easier:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20--%2006m.png)
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20--%2006n.png)
+
+And so the estimated times should not be too far off from the true but uknown values:
+
+*maximum gradient of potentially noisy measurement x1 = 0.00272*
+
+*at time = 2.18000*
+
+*maximum gradient of noise-free x1 = 0.00272*
+
+*at time = 2.01000*
+
+*SIGMA = 0.01*
+
+*Savitzky-Golay filtering (2x):*
+
+*polynomial order = 1 (manually tuned)*
+
+*window size = 41 (manually tuned)*
+
+------
+
 2025-03-08b
 
 A natural idea to estimate a plausible time for the maximum slope is to filter the noisy measurement.
@@ -10,7 +68,7 @@ if min(x1_grad) < -0.00001:  # leave some room for error
     ...
 ```
 
-Since we don't have to filter a noisy measurement while the process is developing (online solution with a moving average for example), we can do it after the bump test, here with a Savitzky–Golay filter: https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter
+Since we don't have to filter a noisy measurement while the process is developing (with an online solution like a moving average for example), we can do it *after* the bump test, here with a Savitzky–Golay filter: https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter
 
 For example like this:
 
