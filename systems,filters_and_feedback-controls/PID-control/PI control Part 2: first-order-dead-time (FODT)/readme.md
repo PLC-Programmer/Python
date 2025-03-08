@@ -1,4 +1,25 @@
-2025-03-08
+2025-03-08b
+
+A natural idea to estimate a plausible time for the maximum slope is to filter the noisy measurement.
+
+By the way: the current and very simple idea to detect a noisy measurement is only working for positive step responses of self-regulating processes (https://www.isa.org/intech-home/2016/may-june/departments/loop-tuning-basics-self-regulating-processes), where - without noise - the gradient must be zero or higher:
+
+```
+if min(x1_grad) < -0.00001:  # leave some room for error
+    NOISE_PRESENT = True
+    ...
+```
+
+Since we don't have to filter a noisy measurement while the process is developing (online solution with a moving average for example), we can do it after the bump test, here with a Savitzky–Golay filter: https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter
+
+(TBC)
+
+
+
+
+------
+
+2025-03-08a
 
 However, there's one big drawback with a simulation like this:
 
@@ -47,11 +68,17 @@ for k in range(2,STEPS):
 
 <br/>
 
-And the ubiquitous presence of noise is a big problem when calculating the gradient, to get the maximum slope, in a naive way.
+And the ubiquitous presence of noise is a big problem when calculating the gradient, to get the maximum slope, in a naive way:
 
-(TBC)
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20--%2005.png)
 
+*NOISE_PRESENT = True*
 
+*maximum gradient of x1 = 0.02217*
+
+*at time = 6.15000*
+
+=> the targeted maximum slope for the tangential line is for sure not to be found at 6.15 seconds.
 
 ------
 
