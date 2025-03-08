@@ -4,9 +4,52 @@ However, there's one big drawback with a simulation like this:
 
 ![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20--%2000.png)
 
-..and it **noise**!
+..and it's noise:
 
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20--%2004.png)
 
+Nothing in nature runs so smoothly because nature is full of noise.
+
+By the way: I changed the noise logic completely since the old solution just leads to a nonlinear system:
+
+```
+for k in range(2,STEPS):
+    ...
+    # process:
+    if k < STEPS-1:
+        ...
+        # x1_KJA[k+1] = x1_KJA[k+1] * x1_KJA_noise[k+1]
+```
+
+from: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/3.5f3_PI-control-loop_with_3xPT1_Euler_forward_process.py
+
+The "clean" state variable for the process simulation must be kept separated from a noisy measurement, where noise, be it additive or multiplicative, is **not injected** into a state variable with memory but just applied to it at an extra array:
+
+```
+x1       = np.zeros([STEPS])  # clean measurement = clean process output
+x1_noisy = np.zeros([STEPS])  # noisy measurement = noisy process output
+# noise has no memory (--> Markov process) and thus the simulation of a noisy measurement
+# needs an extra array
+...
+# process simulation loop:
+for k in range(2,STEPS):
+
+    # process:
+    if k < STEPS-1:
+        ...
+        x1[k+1] = 1.0/a1**3.0 * ((a1**3.0 - A0)*x1[k-2] \
+                                     - 3.0*a1**2.0*(a0*h - a1)*x1[k] \
+                                     - 3.0*a1*A1*x1[k-1]
+                                     + b0*h**3.0*u[k-2])
+
+        if NOISE is True:
+            x1_noisy[k+1] = x1[k+1] * x1_noise[k+1]
+...
+```
+
+<br/>
+
+And the ubiquitous presence of noise is a big problem when calculating the gradient, to get the maximum slope, in a naive way.
 
 (TBC)
 
