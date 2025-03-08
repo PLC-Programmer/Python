@@ -1,3 +1,19 @@
+2025-03-08
+
+However, there's one big drawback with a simulation like this:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20--%2000.png)
+
+..and it **noise**!
+
+
+
+(TBC)
+
+
+
+------
+
 2025-03-07:
 
 Re: *I'm estimating these parameter values at:*
