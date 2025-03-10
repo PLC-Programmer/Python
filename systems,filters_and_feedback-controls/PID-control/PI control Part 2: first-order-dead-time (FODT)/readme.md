@@ -1,3 +1,41 @@
+2025-03-10
+
+So far the simulation of noise on the measurement, which goes into the controller algorithm, was presented with an extra variable *x1_noisy* in program https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/step_response_parameter_estimation_for_lambda_tuning%20-%20experiments.py, a luxury we don't have in the closed control loop.
+
+Now I got the idea to take back older and memorized noise data points from system state variable x1 when updating *x1[k+1]*:
+
+```
+for k in range(2,STEPS):
+    ...
+    if k < STEPS-1:
+        ...
+        x1[k+1] = 1.0/a1**3.0 * ((a1**3.0 - A0)*x1[k-2]/x1_noise[k-2] \
+                                     - 3.0*a1**2.0*(a0*h - a1)*x1[k]/x1_noise[k] \
+                                     - 3.0*a1*A1*x1[k-1]/x1_noise[k-1] \
+                                     + b0*h**3.0*u[k-2])
+        ...
+        if NOISE is True:
+            x1[k+1] = x1[k+1] * x1_noise[k+1]
+```
+
+from: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/step_response_parameter_estimation_for_lambda_tuning%20-%20experiments2.py
+
+So instead of *x1[k-2]* the term *x1[k-2]/x1_noise[k-2]* is being employed in the difference equation for example, which apparently produces the same noisy signal like we have seen so far:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20-%20experiments2%20b.png)
+
+And remember that the controller algorithm is being executed *before* the process simulation part in the system simulation loop: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/3.5f3_PI-control-loop_with_3xPT1_Euler_forward_process.py
+
+Then I double checked this noise solution on *x1* with the noiseless system state variable *x1_clean*:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/step_response_parameter_estimation_for_lambda_tuning%20-%20experiments2%20c.png)
+
+This looks OK.
+
+Let's see how this works in an updated, closed control loop program.
+
+------
+
 2025-03-08c
 
 Well, nothing keeps us from applying a Savitzky–Golay filter two times:
