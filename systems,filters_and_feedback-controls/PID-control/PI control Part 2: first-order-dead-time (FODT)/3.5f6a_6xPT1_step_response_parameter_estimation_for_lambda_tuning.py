@@ -216,7 +216,7 @@ if NOISE is True:
 
     if FILTERING is True:
         plt.plot(t,x1_org, label="unfiltered measurment")
-        plt.plot(t,x1, label=f'3xPT1: step response to\
+        plt.plot(t,x1, label=f'6xPT1: step response to\
         \nreference jump to 1.0 at time 0\
         \ndouble Savitzky-Golay filtered x1 with\
         \n  window size {WINDOW_SIZE}, polynomial order {POLYNOMIAL_ORDER}')
@@ -231,12 +231,12 @@ if NOISE is True:
         ## \n  windows size = {WINDOW_SIZE}, polynomial order={POLYNOMIAL_ORDER}')
 
     else:
-        plt.plot(t,x1_org, label='3xPT1: step response to\
+        plt.plot(t,x1_org, label='6xPT1: step response to\
         \nreference jump to 1.0 at time 0')
         plt.plot(t,x1_grad*SCALE, label=f'gradient of unfiltered x1 * {SCALE}')
 
 else:
-    plt.plot(t,x1, label="3xPT1: step response to\
+    plt.plot(t,x1, label="6xPT1: step response to\
     \nreference jump to 1.0 at time 0")
 
 
