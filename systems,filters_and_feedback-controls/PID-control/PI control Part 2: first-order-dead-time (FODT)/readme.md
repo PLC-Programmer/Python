@@ -1,3 +1,13 @@
+2025-03-12
+
+Now let's combine the current achievements and apply them to the unit step response of a process with lag of 6th order: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/3.5f6a_6xPT1_step_response_parameter_estimation_for_lambda_tuning.py
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/3.5f6a_6xPT1_step_response_parameter_estimation_for_lambda_tuning.png)
+
+Works like a charm so far, even with the simple Euler forward approximation.
+
+------
+
 2025-03-10
 
 So far the simulation of noise on the measurement, which goes into the controller algorithm, was presented with an extra variable *x1_noisy* in program https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/step_response_parameter_estimation_for_lambda_tuning%20-%20experiments.py, a luxury we don't have in the closed control loop.
