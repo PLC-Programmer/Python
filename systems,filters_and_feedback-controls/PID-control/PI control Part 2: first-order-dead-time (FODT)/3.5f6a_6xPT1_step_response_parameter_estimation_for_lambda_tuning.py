@@ -36,7 +36,7 @@ tstart = 0.0
 h = 0.01  # delta t
 
 
-# 3 x PT1 process coefficients:
+# 6 x PT1 process coefficients:
 b0 = 1.0
 a0 = 1.0
 a1 = 1.0
