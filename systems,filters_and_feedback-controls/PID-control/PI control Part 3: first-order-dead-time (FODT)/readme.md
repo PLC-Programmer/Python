@@ -1,4 +1,33 @@
-2025-03-18
+(work in progress)
+
+2025-03-18b
+
+Something is still missing to bring the puzzle together:
+
+* on hand side we have the original **state-space solution for the PI control** of an undamped PT2 process in program "3.5e1_PI-control-loop_with_2nd_order_lag_process_non-state-space.py": https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process/3.5e1_PI-control-loop_with_2nd_order_lag_process_non-state-space.py with this result:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process/3.5e1_PI-control-loop_with_2nd_order_lag_process_non-state-space%20-%20a.png)
+
+See the state-space solution starting there at comment "# compare with the original state space solution from book's ch.3.5:".
+
+* ..and on the other hand side the recent **non-state-space solution with the Karl Johan Åström-PI controller for a FODT process** to emulate and control a lag process of 6th order ("6 x PT1") with program "3.5g1_PI-control-loop_with_first-order-dead-time_(FODT)_process.py": https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/3.5g1_PI-control-loop_with_first-order-dead-time_(FODT)_process.py
+
+<br/>
+
+Remember that "My final goal is to have a real PI(D) controller which can control a first order plus dead time process (FODT) with acceptable results" from: [https://github.com/PLC-Programmer/Python/tree/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process](https://github.com/PLC-Programmer/Python/blob/master/systems,filters_and_feedback-controls/PID-control/PI%20control%20of%20an%20(undamped)%202nd%20order%20lag%20process/readme.md#my-final-goal)
+
+I guess with program "3.5g1_PI-control-loop_with_first-order-dead-time_(FODT)_process.py" this is partly accomplished, though only a PI controller is in action there (remember: "Although Lambda / IMC tuning rules have also been derived for PID controllers, there is little point in using derivative control in a Lambda-tuned controller." from https://blog.opticontrols.com/archives/260).
+
+However, I would like to compare the solution of the 3.5g1-program with a state-space solution with PI controller for **the same FODT process**.
+
+So far I haven't presented a state-space solution for a process with dead time.
+
+This is to be done yet.
+
+
+------
+
+2025-03-18a
 
 This is the continuation from Part 2: https://github.com/PLC-Programmer/Python/tree/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)
 
