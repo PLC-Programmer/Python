@@ -1,3 +1,51 @@
+2025-03-18
+
+I tried to emulate the 12 tanks in series process with 12 first-order lag terms (PT1) in series:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/Step%20response%20for%20tanks%20in%20series.png)
+
+(see source from below)
+
+However, with the given setup the maximum I can emulate are indeed and apparently only 6 x PT1 terms.
+
+When adding only one more element, that is to emulate a 7 x PT1 process, numerical problems obviously start to creep into the process simulation:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/3.5f7a_7xPT1_step_response_parameter_estimation_for_lambda_tuning%20d.png)
+
+..here in form of overswinging, something which can totally be excluded as a step response of a b0 / (a1*s + a0)^n process.
+
+<br/>
+
+Now I come back to my plan as stated below (*Let's see how this works in an updated, closed control loop program.*) and put the 6 x PT1 process into a closed control loop with the PI controller algorithm by Karl Johan Åström (https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/3.5f6_PI-control-loop_with_6xPT1_Euler_forward_process.py) and where the control parameters are set according to the lambda tuning rules, based on the estimated time constants td and tau of the unit step response of the open loop:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/3.5f6_PI-control-loop_with_6xPT1_Euler_forward_process%20a.png)
+
+Here, the same control action without the simulated noise:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/3.5f6_PI-control-loop_with_6xPT1_Euler_forward_process%20b.png)
+
+Above overswinging is due to the fact that factor *taucl* has been set to a fast 1.0.
+
+Here the same with *taucl* set to a more moderate 1.5:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/3.5f6_PI-control-loop_with_6xPT1_Euler_forward_process%20c.png)
+
+Here the same with *taucl* set to the original and slow value of 3.0:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/3.5f6_PI-control-loop_with_6xPT1_Euler_forward_process%20e.png)
+
+<br/>
+
+At last, an experiment with a transient disturbance where I commented on in the source code: "...but a transient disturbance apparently looks not realistic". I made this specific  statement because I miss a real world example - *everything* here is simulated.
+
+But what I can say is that with a simulation with a difference equation of this high order of 6 even a very small disturbance amplitude of 0.000000001 leads to a rather unrealistic control action like this (here with unbounded controller output):
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/pictures/3.5f6_PI-control-loop_with_6xPT1_Euler_forward_process%20d.png)
+
+
+
+------
+
 2025-03-12
 
 Now let's combine the current achievements and apply them to the unit step response of a process with lag of 6th order: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)/3.5f6a_6xPT1_step_response_parameter_estimation_for_lambda_tuning.py
