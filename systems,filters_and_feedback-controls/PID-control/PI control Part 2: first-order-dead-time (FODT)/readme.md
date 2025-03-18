@@ -1,3 +1,7 @@
+Story continues here at "PI control Part 3: first-order-dead-time (FODT)": https://github.com/PLC-Programmer/Python/blob/master/systems,filters_and_feedback-controls/PID-control/PI%20control%20Part%203:%20first-order-dead-time%20(FODT)/readme.md
+
+<br/>
+
 2025-03-18
 
 I tried to emulate the 12 tanks in series process with 12 first-order lag terms (PT1) in series:
