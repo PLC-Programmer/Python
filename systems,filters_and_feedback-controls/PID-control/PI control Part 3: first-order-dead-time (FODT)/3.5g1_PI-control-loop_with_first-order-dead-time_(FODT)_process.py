@@ -30,7 +30,7 @@ U_MAX = 2.0   # absolute; org 2.0
 
 ANTIWINDUPACTION = True
 
-# PT1 process coefficients:
+# PT1 process coefficients (part of FODT):
 # numerator polynomial:   b0
 # denominator polynomial: (a1*s + a0)
 # 2025-03-19: with K = 1.0, a0 = 1.0 => a1 = tau = 3.57, see from below
