@@ -30,6 +30,9 @@ for k in range(1,STEPS):
     ...
 ```
 
+Be aware that the time continuous part of this process is a IT1 term, so an integrating term with a lag of first order. Therefore two differential equations (f1, f2) are to be integrated.
+
+
 To achieve my goal as stated below, I'm now trying to merge this algorithm with the other requirements of the simulated FODT process within a state-space solution with PI control.
 
 
