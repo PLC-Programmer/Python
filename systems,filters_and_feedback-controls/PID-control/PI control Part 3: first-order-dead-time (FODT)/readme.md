@@ -1,5 +1,42 @@
 (work in progress)
 
+<br/>
+
+2025-03-19a
+
+Back in January I implemented chapter "4.1  Simulation  der  Zweipunktregelung  einer  Regelstrecke  mit  Totzeit" / "4.1. Simulation of the on-off control of a process with dead time" from the Ernst-Guenther Feindt book: "Computersimulation von Regelungen - Modellbildung und Softwareentwicklung": https://www.degruyter.com/document/doi/10.1515/9783486799002-005/html
+
+See my source code from here: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/4.1_two-point_control_with_dead_time.py
+
+There the dead time of the process is implemented like this:
+
+```
+# system simulation loop:
+for k in range(1,STEPS):
+
+    # controller algo:
+    e1  = w_1 - x1[k-1]
+    if e1 > 0:
+        u_ = 1.0
+    else:
+        u_ = -1.0
+
+    # deadtime simulation loop:
+    u[0] = u_
+    for m in range(STEPS_DT-1,0,-1):
+        u[m] = u[m-1]
+    y = u[-1]  # output of deadtime process block
+
+    ...
+```
+
+To achieve my goal as stated below, I'm now trying to merge this algorithm with the other requirements of the simulated FODT process within a state-space solution with PI control.
+
+
+
+
+------
+
 2025-03-18b
 
 Something is still missing to bring the puzzle together:
