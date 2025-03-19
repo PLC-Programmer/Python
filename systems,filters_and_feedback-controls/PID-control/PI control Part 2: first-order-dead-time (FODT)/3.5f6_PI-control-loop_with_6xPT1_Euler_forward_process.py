@@ -164,7 +164,7 @@ for k in range(5,STEPS):
     # process:
     if k < STEPS-1:
         # Euler forward emulation of
-        # process transfer function G(s) = b0 / ((a0 + a1*s)*(a0 + a1*s)*(a0 + a1*s))
+        # process transfer function G(s) = b0 / ((a0 + a1*s)^6)
         # ...
         # again using SymPy; see at:
         #   3.5f2_PI-control-loop_with_2xPT1_Euler_forward_process.py
