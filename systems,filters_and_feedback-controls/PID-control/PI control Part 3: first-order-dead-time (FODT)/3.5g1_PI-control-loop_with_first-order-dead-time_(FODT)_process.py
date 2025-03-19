@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-2025-03-17
+2025-03-17/19
 
 3.5g1_PI-control-loop_with_first-order-dead-time_(FODT)_process.py
 
@@ -10,12 +10,7 @@ Based on programs:
     3.5c_PID-control_with_first-order-dead-time_(FODT)_process.py
 
 
-tests: looks OK
-
-        min(u_KJA) = 0.0
-        max(u_KJA)= 0.9689183317937449
-        simuation time steps with each step being 0.01[sec] = 2500
-        dead time: delay in time steps = 283
+tests: OK
 
 ideas:
 
@@ -36,11 +31,21 @@ U_MAX = 2.0   # absolute; org 2.0
 ANTIWINDUPACTION = True
 
 # PT1 process coefficients:
-b0 = 1.0
-a0 = 1.0
-a1 = 1.0
 # numerator polynomial:   b0
 # denominator polynomial: (a1*s + a0)
+# 2025-03-19: with K = 1.0, a0 = 1.0 => a1 = tau = 3.57, see from below
+b0 = 1.0
+a0 = 1.0
+a1 = 3.57
+
+
+# 6 x PT1 process coefficients:
+b0_org = 1.0
+a0_org = 1.0
+a1_org = 1.0
+# numerator polynomial:   b0_org
+# denominator polynomial: (a1_org*s + a0_org)^6
+
 
 
 # PI controller parameters:
@@ -57,6 +62,8 @@ td=2.83  # [sec]; from computer evaluation of the process step response
 Kp = tau/(gp * (taucl + td))
 Tn = tau
 
+PERC63 = 0.63  # 63% of total PV change
+
 DELAY = int(td/h)   # dead time in time steps
 
 
@@ -64,7 +71,7 @@ DELAY = int(td/h)   # dead time in time steps
 Tf = 0.2  # time constant of lowpass filter of 1st order (PT1) [sec]
 
 
-STEPS = 10000
+STEPS = 2500
 tstop = STEPS * h + tstart
 t = np.arange(tstart,tstop,h)
 
@@ -73,7 +80,7 @@ lpf = np.zeros([STEPS])  # low-pass filter of first order for D-term
 # w_1 = 1.0  # jump of reference value at t = 0
 
 # transient disturbance:
-TRANSIENT_DISTURBANCE = True
+TRANSIENT_DISTURBANCE = False
 t_dist_start_t = 50.0
 t_dist_stop_t  = 60.0
 t_dist_start   = t_dist_start_t / h
@@ -130,6 +137,22 @@ Tf_KJA = Tf*1.0
 # N = Tv_KJA/Tf_KJA
 
 
+# benchmark process: 6xPT1:
+x1_org       = np.zeros([STEPS])
+x1_clean_org = np.zeros([STEPS])
+# long constant expressions for this process:
+A0 = a0_org**6*h**6 - 6*a0_org**5*a1_org*h**5 + 15*a0_org**4*a1_org**2*h**4 - 20*a0_org**3*a1_org**3*h**3 \
+     + 15*a0_org**2*a1_org**4*h**2 - 6*a0_org*a1_org**5*h + a1_org**6
+A1 = 6*a1_org*(a0_org**5*h**5 - 5*a0_org**4*a1_org*h**4 + 10*a0_org**3*a1_org**2*h**3 \
+     - 10*a0_org**2*a1_org**3*h**2 + 5*a0_org*a1_org**4*h - a1_org**5)
+A2 = 15*a1_org**2*(a0_org**4*h**4 - 4*a0_org**3*a1_org*h**3 + 6*a0_org**2*a1_org**2*h**2 \
+     - 4*a0_org*a1_org**3*h + a1_org**4)
+A3 = 20*a1_org**3*(a0_org**3*h**3 - 3*a0_org**2*a1_org*h**2 + 3*a0_org*a1_org**2*h - a1_org**3)
+A4 = 15*a1_org**4*(a0_org**2*h**2 - 2*a0_org*a1_org*h + a1_org**2)
+A5 = 6*a1_org**5*(a0_org*h - a1_org)
+A6 = a1_org**6
+
+
 for k in range(0,STEPS):
 
     # set point drop to 0.5:
@@ -144,7 +167,8 @@ for k in range(0,STEPS):
     #            * (D_KJA[k-1] - Kp_KJA*N*(x1[k] - x1[k-1]))
 
     # controller output:
-    u_KJA[k] = P_KJA + I_KJA[k]  # + D_KJA[k]
+    # u_KJA[k] = P_KJA + I_KJA[k]  # + D_KJA[k]
+    u_KJA[k] = 1.0  # bump test
 
     ANTIWINDUP = False
     if BOUND is True:
@@ -187,6 +211,24 @@ for k in range(0,STEPS):
                 x1[k+1] += DIST_VAL
 
 
+        # benchmark process: 6xPT1:
+        x1_org[k+1] = 1/A6 * (b0*h**6*u_KJA[k-5]
+                          - A5*x1_org[k]/x1_noise[k]
+                          - A4*x1_org[k-1]/x1_noise[k-1]
+                          - A3*x1_org[k-2]/x1_noise[k-2]
+                          - A2*x1_org[k-3]/x1_noise[k-3]
+                          - A1*x1_org[k-4]/x1_noise[k-4]
+                          - A0*x1_org[k-5]/x1_noise[k-5])
+
+        x1_clean_org[k+1] = 1/A6 * (b0*h**6*u_KJA[k-5]
+                                - A5*x1_clean_org[k]
+                                - A4*x1_clean_org[k-1]
+                                - A3*x1_clean_org[k-2]
+                                - A2*x1_clean_org[k-3]
+                                - A1*x1_clean_org[k-4]
+                                - A0*x1_clean_org[k-5])
+
+
 
 plt.suptitle('Simulation of PI controller with a FODT process', y = 1.0)
 plt.title(f'FODT: 1st order lag: tau={tau} sec, dead time={td} sec', y = 1.0)
@@ -194,6 +236,15 @@ plt.title(f'FODT: 1st order lag: tau={tau} sec, dead time={td} sec', y = 1.0)
 # plt.plot(t,x1, label=f'PID controller (KJ Åström algo):\
 # \nKp={Kp_KJA:.2f},Tn={Tn:.2f},Tv={Tv_KJA:.2f},Tf={Tf_KJA:.2f}')
 
+plt.plot(t,x1, label=f'bump test of FODT process:\
+\n  tau={tau} [sec], td={td} [sec]\
+\n  (computer reading w/ noisy measurement)')
+
+plt.plot(t,x1_org, label=f'bump test of original 6xPT1 process:\
+\n  b0={b0_org}, a0={a0_org}, a1={a1_org} [sec] (Euler forward)')
+
+
+"""
 plt.plot(t,x1, label=f'PI controller (Karl Johan Åström algorithm):\
 \nKp={Kp_KJA:.4f},Tn={Tn:.4f}, which are based on:\
 \n  tau={tau} [sec], td={td} [sec]\
@@ -201,6 +252,7 @@ plt.plot(t,x1, label=f'PI controller (Karl Johan Åström algorithm):\
 \n  taucl factor={taucl_factor} (my setting)\
 \nreference jump to 1.0 at time 0\
 \nanti-windup in action: {ANTIWINDUPACTION}')
+"""
 
 
 if BOUND is True:
@@ -213,6 +265,15 @@ else:
 
 # plt.plot(t,I_KJA, label='variable for integral part of controller',\
 # linestyle=':', color="#1f77b4")  # matplotlib default plot color
+
+
+plt.axhline(PERC63, color='r', label='63% of process value (PV)', linestyle='--')
+plt.axvline(0.0, color='magenta', label='start of bump test', linestyle='-.')
+plt.axvline(td, color='magenta', label=f'dead time td≈{td:.2f} [sec]:\
+\n  computer reading', linestyle='--')
+plt.axvline(tau+td, color='magenta', label=f'time constant tau≈{tau:.2f} [sec]:\
+\n  computer reading', linestyle=':')
+
 
 if NOISE is True:
     plt.plot([],[], label = f'sigma of noisy x1 (multiplicative): {SIGMA}')
