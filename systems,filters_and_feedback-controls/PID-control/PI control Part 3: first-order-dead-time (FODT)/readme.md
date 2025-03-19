@@ -101,6 +101,8 @@ So at first, I compare both step responses to see if the FODT simulation is a su
 
 ![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g1_PI-control-loop_with_first-order-dead-time_(FODT)_process%200%20-%20bump%20test.png)
 
+The difference area between the two bump test curves up to 25 seconds is about -39.7, which means that the original 6xPT1 step response curve covers more area up to 25 seconds. This represents about 2.1% more area than the area of the blue FODT emulation process.
+
 (TBD)
 
 
