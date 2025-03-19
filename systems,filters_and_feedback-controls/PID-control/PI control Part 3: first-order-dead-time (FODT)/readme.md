@@ -101,8 +101,6 @@ So at first, I compare both step responses to see if the FODT simulation is a su
 
 ![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g1_PI-control-loop_with_first-order-dead-time_(FODT)_process%200%20-%20bump%20test.png)
 
-Be aware that the time constants of the original 6xPT1 process have been estimated from a noisy measurement. That's why in the diagram above the blue FODT curve is not hitting the 63% threshold at time constant tau super-exactly.
-
 (TBD)
 
 
