@@ -1,4 +1,4 @@
-2025-02-26: story continues here at "PI control Part 2: first-order-dead-time (FODT)": https://github.com/PLC-Programmer/Python/tree/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)
+2025-02-26: story continues here at "PI control Part 2: first-order-dead-time (FODT)": https://github.com/PLC-Programmer/Python/blob/master/systems,filters_and_feedback-controls/PID-control/PI%20control%20Part%202:%20first-order-dead-time%20(FODT)/readme.md#2025-02-26
 
 <br/>
 
