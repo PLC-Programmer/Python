@@ -71,42 +71,42 @@ This is to be done yet.
 
 This is the continuation from Part 2: https://github.com/PLC-Programmer/Python/tree/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%202%3A%20first-order-dead-time%20(FODT)
 
-Now I try to simulate the 6 tanks in series process exactly with a **First-Order-Dead-Time (FODT)** process, also often called First-Order Plus Dead-Time (FOPDT) process, based on the estimated process time constants of Part 2, here without simulated process noise: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/3.5g1_PI-control-loop_with_first-order-dead-time_(FODT)_process.py
+Now I try to simulate the 6 tanks in series process exactly with a **First-Order-Dead-Time (FODT)** process, also often called First-Order Plus Dead-Time (FOPDT) process, based on the estimated process time constants of Part 2.
 
-![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g1_PI-control-loop_with_first-order-dead-time_(FODT)_process%20a.png)
+2025-03-19: the first version was too fast.
 
-Here I added another set point jump at second 50:
-
-![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g1_PI-control-loop_with_first-order-dead-time_(FODT)_process%20b.png)
-
-Here the same with simulated process noise:
-
-![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g1_PI-control-loop_with_first-order-dead-time_(FODT)_process%20c.png)
-
-Now the simulation of a transient disturbance:
-
-![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g1_PI-control-loop_with_first-order-dead-time_(FODT)_process%20d.png)
-
-Be aware that the disturbance amplitude above has the bold value of 0.01 compared to the minuscule value of 0.000000001 in Part 2.
-
-This stark difference stems from the now fundamentally changed process simulation with the FODT approximation implemented like this:
+The coefficients of the polynomial of the transfer function of the time continuous PT1 term inside the FODT term are not the same, at least partly not the same, as the coefficients of the polynomial of the transfer function of the PT1 basic block from the 6xPT1 process: 
 
 ```
-        # process:
-        # Euler forward emulation of
-        # process transfer function G(s) = b0 / ((a0 + a1*s)
-        ...
-        x1[k+1] = 1/a1 * (b0*h*u_KJA[k-DELAY]
-                          + (a1 - a0*h)*x1[k]/x1_noise[k])
+# PT1 process coefficients (part of FODT):
+# numerator polynomial:   b0
+# denominator polynomial: (a1*s + a0)
+# 2025-03-19: with K = 1.0, a0 = 1.0 => a1 = tau = 3.57, see from below
+b0 = 1.0
+a0 = 1.0
+a1 = 3.57
+
+
+# 6 x PT1 process coefficients:
+b0_org = 1.0
+a0_org = 1.0
+a1_org = 1.0
+# numerator polynomial:   b0_org
+# denominator polynomial: (a1_org*s + a0_org)^6
 ```
 
-Now the process dead time is directly considered at controller output *u_KJA[k]*, which became *u_KJA[k-DELAY]*, with *DELAY = int(td/h)* time steps of dead time which just now goes directly into our usual difference equation of a PT1 term with an Euler forward emulation.
+From: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/3.5g1_PI-control-loop_with_first-order-dead-time_(FODT)_process.py
 
-Here the same with a disturbance amplitude of only 0.001:
+So at first, I compare both step responses to see if the FODT simulation is a suitable emulation of the original 6xPT1 process: 
 
-![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g1_PI-control-loop_with_first-order-dead-time_(FODT)_process%20e.png)
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g1_PI-control-loop_with_first-order-dead-time_(FODT)_process%200%20-%20bump%20test.png)
 
-..something which looks more realistic.
+Be aware that the time constants of the original 6xPT1 process have been estimated from a noisy measurement. That's why in the diagram above the blue FODT curve is not hitting the 63% threshold at time constant tau super-exactly.
+
+(TBD)
+
+
+
 
 
 
