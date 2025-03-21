@@ -1,6 +1,82 @@
 (work in progress)
 
+2025-03-21
+
+#### The Merge: state-space solution of a PI controller for a dead time process
+
+Here's my merger of programs as described below: https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/3.5g2_PI-control_of_FODT_process%20-%20state-space%20solution.py
+
+A couple of remarks on this program:
+
+```
+# system simulation loop:
+for k in range(1,STEPS):
+    ...
+    # PI controller algo:
+    e1 = r[k] - x1ss[k-1] + x2ss[k-1]/Tn
+    u_ = Kp * e1
+
+    ...
+    # deadtime simulation loop:
+    u[0] = u_
+    for m in range(DELAY-1,0,-1):
+        u[m] = u[m-1]
+    y = u[-1]  # output of deadtime process block
+```
+
+* like in program *4.1_two-point_control_with_dead_time.py* the (main) controller algorithm is part of the main system simulation loop
+* also like in program *4.1_...*, the (main) controller algorithm comes before the dead time simulation loop
+
+There are two ordinary differential equations (ODE's) of first order to solve (in the system simulation loop --> "Runge–Kutta method"):
+
+```
+def DIFF_EQU(x_1, y_, k_):
+    ...
+    f1 = -a0/a1*x_1 + b0/a1*y_  # PT1 term
+    f2 = r[k_] - x_1  # control error for I-part of PI controller
+    return f1, f2
+```
+
+* f1 is the lag of first order term ("PT1")
+* f2 is the control error for the I-part of the PI controller
+
 <br/>
+
+However, at first I did a bump test (open loop) to check if the process response follows the expected curve:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g2_PI-control_of_FODT_process%20-%20state-space%20solution-%200%2C%20bump%20test.png)
+
+..which is the case.
+
+The closed loop unit step response looks like this:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g2_PI-control_of_FODT_process%20-%20state-space%20solution%20a.png)
+
+The second set point jump at second 50 looks like this
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g2_PI-control_of_FODT_process%20-%20state-space%20solution%20b.png)
+
+The same with noise:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g2_PI-control_of_FODT_process%20-%20state-space%20solution%20c.png)
+
+Here the big transient disturbance:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g2_PI-control_of_FODT_process%20-%20state-space%20solution%20d.png)
+
+...and here the small one:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g2_PI-control_of_FODT_process%20-%20state-space%20solution%20e.png)
+
+
+
+
+
+<br/>
+
+At last: beware that Anti-windup and controller output bounding have not been tested here!
+
+------
 
 2025-03-19a
 
@@ -34,8 +110,6 @@ Be aware that the time continuous part of this process is a IT1 term, so an inte
 
 
 To achieve my goal as stated below, I'm now trying to merge this algorithm with the other requirements of the simulated FODT process within a state-space solution with PI control.
-
-
 
 
 ------
