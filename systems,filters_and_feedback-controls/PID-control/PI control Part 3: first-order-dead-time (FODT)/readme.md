@@ -1,6 +1,29 @@
-(work in progress)
+2025-03-21b
 
-2025-03-21
+Here I compare both solutions, the state-space solution with the non-state-space solution:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g3_PI-control_of_FODT_process%20-%20state-space%20vs%20non-ss%20solution%20a.png)
+
+Both curve sets (controller output and measurement) look pretty much the same.
+
+Also with these tests:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g3_PI-control_of_FODT_process%20-%20state-space%20vs%20non-ss%20solution%20b.png)
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g3_PI-control_of_FODT_process%20-%20state-space%20vs%20non-ss%20solution%20c.png)
+
+Something which begs the question: how similar are these two curve sets?
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g3_PI-control_of_FODT_process%20-%20state-space%20vs%20non-ss%20solution%20d.png)
+
+Answer: very similar, but not identical as to be expected probably:
+
+![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g3_PI-control_of_FODT_process%20-%20state-space%20vs%20non-ss%20solution%20e.png)
+
+
+------
+
+2025-03-21a
 
 #### The Merge: state-space solution of a PI controller for a dead time process
 
@@ -67,10 +90,6 @@ Here the big transient disturbance:
 ...and here the small one:
 
 ![plot](https://github.com/PLC-Programmer/Python/blob/master/systems%2Cfilters_and_feedback-controls/PID-control/PI%20control%20Part%203%3A%20first-order-dead-time%20(FODT)/pictures/3.5g2_PI-control_of_FODT_process%20-%20state-space%20solution%20e.png)
-
-
-
-
 
 <br/>
 
